@@ -1,0 +1,13 @@
+# node.js
+node_modules/
+build/
+package-lock.json
+
+# sqlite3
+*.db
+*.db-wal
+*.db-shm
+
+# our info
+logs/
+auth.yml

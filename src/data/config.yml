@@ -1,0 +1,25 @@
+# Database name.
+database: reborn.db
+
+# Command prefix.
+prefix: "!"
+
+# Logs directory.
+logs_dir: "logs/"
+
+# Time detain lasts for in ms.
+detain_time: 3e5
+
+# Time cases last for in ms.
+max_case_time: 864e5
+
+# Time until verification is denied in ms.
+verify_timeout: 3e5
+
+# Time units
+time_units: {
+  m: 6e4,
+  h: 36e5,
+  d: 864e5,
+  w: 6048e5
+}

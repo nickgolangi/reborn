@@ -1,0 +1,8 @@
+# Bot account token used to connect to Discord.
+discord_token: "NTgwODY3Mzc2OTk2OTQxODQ2.XO9RLw.FhcKXMQTPisJpjuiIbUTQklP5kI"
+
+# User IDs of the Owner.
+owner_id: "474210876967223296"
+
+# User IDs of all Developers.
+developer_ids: ["222093436520628225", "194177256652800000"]
