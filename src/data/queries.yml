@@ -1,7 +1,7 @@
 laws_table: |-
   CREATE TABLE IF NOT EXISTS laws (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    guild_id TEXT NOT NULL REFERENCES guilds(id),
+    guild_id TEXT NOT NULL REFERENCES guilds(guild_id),
     created_at INTEGER NOT NULL,
     last_modified_at INTEGER NOT NULL,
     name TEXT NOT NULL,
@@ -12,7 +12,7 @@ laws_table: |-
 warrants_table: |-
   CREATE TABLE IF NOT EXISTS warrants (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    guild_id TEXT NOT NULL REFERENCES guilds(id),
+    guild_id TEXT NOT NULL REFERENCES guilds(guild_id),
     law_id INTEGER NOT NULL REFERENCES laws(id),
     created_at INTEGER NOT NULL,
     last_modified_at INTEGER NOT NULL,
@@ -24,7 +24,7 @@ warrants_table: |-
 detainments_table: |-
   CREATE TABLE IF NOT EXISTS detainments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    guild_id TEXT NOT NULL REFERENCES guilds(id),
+    guild_id TEXT NOT NULL REFERENCES guilds(guild_id),
     created_at INTEGER NOT NULL,
     last_modified_at INTEGER NOT NULL,
     defendant_id TEXT NOT NULL,
@@ -36,7 +36,7 @@ detainments_table: |-
 cases_table: |-
   CREATE TABLE IF NOT EXISTS cases (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    guild_id TEXT NOT NULL REFERENCES guilds(id),
+    guild_id TEXT NOT NULL REFERENCES guilds(guild_id),
     warrant_id INTEGER NOT NULL REFERENCES warrants(id),
     created_at INTEGER NOT NULL,
     last_modified_at INTEGER NOT NULL,
