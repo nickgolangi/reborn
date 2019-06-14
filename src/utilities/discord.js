@@ -56,7 +56,7 @@ module.exports = {
       }, config.verify_timeout);
 
       msg_collector.add(
-        m => m.author.id === msg.author.id && m.content === "I'm sure.",
+        m => m.author.id === msg.author.id && m.content === "I'm sure",
         yes => {
           clearTimeout(timeout);
           delete_message(yes.channel, yes);
