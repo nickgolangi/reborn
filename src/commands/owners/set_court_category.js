@@ -39,6 +39,6 @@ module.exports = new class SetCourtCategory extends Command {
       guild_id: msg.channel.guild.id,
       court_category: args.channel.id
     });
-    await discord.create_msg(msg.channel, `I have set the Court category to ${args.channel.mention}.`);
+    await discord.create_msg(msg.channel, `I have set the Court category to ${args.channel.name}.`);
   }
 }();
