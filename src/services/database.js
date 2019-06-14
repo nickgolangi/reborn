@@ -44,6 +44,7 @@ module.exports = {
       return res;
 
     columns.created_at = Date.now();
+    columns.last_modified_at = Date.now();
 
     const keys = Object.keys(columns);
 
