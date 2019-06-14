@@ -63,7 +63,7 @@ guilds_table: |-
 
 select: SELECT * FROM {0} WHERE guild_id = ?
 
-insert: INSERT INTO {0}({0}) VALUES({2}) ON CONFLICT DO NOTHING
+insert: INSERT INTO {0}({1}) VALUES({2}) ON CONFLICT DO NOTHING
 
 upsert: INSERT INTO {0}({1}) VALUES({2}) ON CONFLICT(guild_id) DO UPDATE SET {3}
 
