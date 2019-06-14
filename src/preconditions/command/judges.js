@@ -28,7 +28,7 @@ module.exports = new class Judges extends Precondition {
 
     if(judge_role === undefined || role === undefined || !discord.usable_role(msg.channel.guild, role))
       return PreconditionResult.fromError(cmd, "the Judge role needs to be set.");
-    else if(msg.member.roles.has(judge_role))
+    else if(msg.member.roles.includes(judge_role))
       return PreconditionResult.fromSuccess();
 
     return PreconditionResult.fromError(cmd, "only Judges can do that.");
