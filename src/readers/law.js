@@ -12,14 +12,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const db = require("../services/database.js");
-const handle_matches = require("../utilities/handle_matches.js");
-const {TypeReader} = require("patron.js");
+'use strict';
+const db = require('../services/database.js');
+const handle_matches = require('../utilities/handle_matches.js');
+const { TypeReader } = require('patron.js');
 
 module.exports = new class Law extends TypeReader {
   constructor() {
-    super({type: "law"});
+    super({ type: 'law' });
   }
 
   async read(cmd, msg, arg, args, val) {
@@ -29,7 +29,7 @@ module.exports = new class Law extends TypeReader {
     return handle_matches(
       cmd,
       laws.filter(law => law.name.toLowerCase().startsWith(name)),
-      "that law does not exist."
+      'that law does not exist.'
     );
   }
 }();

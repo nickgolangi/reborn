@@ -13,25 +13,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
+const { Argument, Command } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
-const { Precondition, PreconditionResult } = require('patron.js');
 
-module.exports = new class Officers extends Precondition {
+module.exports = new class SetTrialRole extends Command {
   constructor() {
-    super({ name: 'officers' });
+    super({
+      args: [
+        new Argument({
+          example: 'Trials',
+          key: 'role',
+          name: 'role',
+          type: 'role',
+          preconditions: ['usable_role'],
+          remainder: true
+        })
+      ],
+      description: 'Sets the Trial role.',
+      groupName: 'owners',
+      names: ['set_trial_role']
+    });
   }
 
-  async run(cmd, msg) {
-    const { officer_role } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
-    const role = msg.channel.guild.roles.get(officer_role);
-
-    if (!officer_role || !role || !discord.usable_role(msg.channel.guild, role)) {
-      return PreconditionResult.fromError(cmd, 'the Officer role needs to be set.');
-    } else if (msg.member.roles.includes(officer_role)) {
-      return PreconditionResult.fromSuccess();
-    }
-
-    return PreconditionResult.fromError(cmd, 'only Officers can do that.');
+  async run(msg, args) {
+    db.update('guilds', {
+      guild_id: msg.channel.guild.id,
+      trial_role: args.role.id
+    });
+    await discord.create_msg(msg.channel, `I have set the Trial role to ${args.role.mention}.`);
   }
 }();

@@ -12,38 +12,138 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {Argument, Command} = require("patron.js");
-const db = require("../../services/database.js");
-const discord = require("../../utilities/discord.js");
+'use strict';
+const { Argument, Command, CommandResult } = require('patron.js');
+const catch_discord = require('../../utilities/catch_discord.js');
+const client = require('../../services/client.js');
+const verdict = require('../../enums/verdict.js');
+const db = require('../../services/database.js');
+const discord = require('../../utilities/discord.js');
+const number = require('../../utilities/number.js');
+const addRole = catch_discord(client.addGuildMemberRole.bind(client));
+const removeRole = catch_discord(client.removeGuildMemberRole.bind(client));
+const half_hour = 18e5;
+const repeat_felon_count = 3;
 
 module.exports = new class Guilty extends Command {
   constructor() {
     super({
-      args: [new Argument({
-        example: "\"Criminal scum!\"",
-        key: "opinion",
-        name: "opinion",
-        type: "string"
-      }),
-      new Argument({
-        example: "5h",
-        key: "sentence",
-        name: "sentence",
-        type: "timespan"
-      })],
-      description: "Declares a guilty verdict in court.",
-      groupName: "courts",
-      names: ["guilty"]
+      preconditions: ['can_imprison'],
+      args: [
+        new Argument({
+          example: '"Criminal scum!"',
+          key: 'opinion',
+          name: 'opinion',
+          type: 'string'
+        }),
+        new Argument({
+          example: '5h',
+          key: 'sentence',
+          name: 'sentence',
+          type: 'timespan'
+        })
+      ],
+      description: 'Declares a guilty verdict in court.',
+      groupName: 'courts',
+      names: ['guilty']
     });
   }
 
   async run(msg, args) {
-    const court = db.get_channel_case(msg.channel.id);
+    const {
+      channel_id, created_at, defendant_id, law_id, id: case_id
+    } = db.get_channel_case(msg.channel.id);
+    const defendant = msg.channel.guild.members.get(defendant_id);
 
-    if(court === undefined)
+    if (!channel_id || !defendant) {
       return;
+    }
 
-    // TODO
+    const timeElapsed = Date.now() - created_at;
+    const currrent_verdict = db.get_verdict(case_id);
+    const finished = currrent_verdict && (currrent_verdict.verdict === verdict.guilty
+      || currrent_verdict.verdict === verdict.innocent);
+
+    if (timeElapsed < half_hour) {
+      return CommandResult.fromError('A verdict can only be delivered 30 minutes \
+after the case has started.');
+    } else if (finished) {
+      return CommandResult.fromError('This case has already reached a verdict');
+    }
+
+    const verified = await discord.verify_msg(
+      msg,
+      '**Warning:** Are you sure you want to deliver this verdict? Unjust verdicts will result in \
+an impeachment. Type `I\'m sure` if this is your final verdict.'
+    );
+
+    if (!verified) {
+      return;
+    }
+
+    const { hours } = number.msToTime(args.sentence);
+    const law = db.get_law(law_id);
+    const repeated = await this.shouldMute({
+      ids: {
+        guild: msg.channel.guild.id, case: case_id, defendant: defendant_id
+      },
+      opinion: args.opinion, sentence: args.sentence, law
+    });
+    const ending = `${law.mandatory_felony || (!law.mandatory_felony && repeated) ? `sentenced to \
+${hours} hours in prison${repeated ? ` for repeatedly breaking the law \`${law.name}\`` : ''}` : '\
+charged with committing a misdemeanor'}.`;
+
+    await discord.create_msg(
+      msg.channel, `${defendant.mention} has been found guilty and was ${ending}`
+    );
+  }
+
+  async shouldMute({ ids, opinion, sentence, law }) {
+    const update = {
+      guild_id: ids.guild,
+      case_id: ids.case,
+      defendant_id: ids.defendant,
+      verdict: verdict.guilty,
+      opinion
+    };
+    let mute = false;
+
+    if (!law.mandatory_felony) {
+      const verdicts = db.fetch_verdicts(ids.guild, ids.defendant)
+        .filter(x => x.verdict === verdict.guilty);
+      let count = 1;
+
+      for (let i = 0; i < verdicts.length; i++) {
+        const user_case = db.get_case(verdicts[i].case_id);
+        const { name } = db.get_law(user_case.law_id);
+
+        if (name === law.name) {
+          count++;
+        }
+
+        if (count >= repeat_felon_count) {
+          mute = true;
+          break;
+        }
+      }
+    }
+
+    const addSentence = law.mandatory_felony || (!law.mandatory_felony && mute);
+
+    if (addSentence) {
+      update.sentence = sentence;
+      await this.imprison(ids.guild, ids.defendant);
+    }
+
+    db.insert('verdicts', update);
+
+    return mute;
+  }
+
+  async imprison(guild_id, defendant_id) {
+    const { trial_role, imprisoned_role } = db.fetch('guilds', { guild_id });
+
+    await removeRole(guild_id, defendant_id, trial_role);
+    await addRole(guild_id, defendant_id, imprisoned_role);
   }
 }();

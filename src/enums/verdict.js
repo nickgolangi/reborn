@@ -13,7 +13,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-const client = require('../services/client.js');
-const log = require('../utilities/logger.js');
 
-client.on('shardDisconnect', (err, id) => log.error(`Shard #${id}`, err));
+module.exports = {
+  pending: 0,
+  guilty: 1,
+  innocent: 2
+};

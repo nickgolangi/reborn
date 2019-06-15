@@ -12,34 +12,38 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {Argument, Command} = require("patron.js");
-const db = require("../../services/database.js");
-const discord = require("../../utilities/discord.js");
+'use strict';
+const { Argument, Command } = require('patron.js');
+const db = require('../../services/database.js');
+const discord = require('../../utilities/discord.js');
 
 module.exports = new class AllowInCourt extends Command {
   constructor() {
     super({
-      args: [new Argument({
-        example: "Stipendi",
-        key: "member",
-        name: "member",
-        type: "member",
-        remainder: true
-      })],
-      description: "Allows a citizen to speak at a hearing.",
-      groupName: "courts",
-      names: ["allow_in_court"]
+      args: [
+        new Argument({
+          example: 'Stipendi',
+          key: 'member',
+          name: 'member',
+          type: 'member',
+          remainder: true
+        })
+      ],
+      description: 'Allows a citizen to speak at a hearing.',
+      groupName: 'courts',
+      names: ['allow_in_court']
     });
+    this.bitfield = 2048;
   }
 
   async run(msg, args) {
     const court = db.get_channel_case(msg.channel.id);
 
-    if(court === undefined)
+    if (!court) {
       return;
+    }
 
-    await msg.channel.editPermission(args.member.id, 2048, 0, "member");
+    await msg.channel.editPermission(args.member.id, this.bitfield, 0, 'member');
     await discord.create_msg(msg.channel, `Added ${discord.tag(args.member)}.`);
   }
 }();

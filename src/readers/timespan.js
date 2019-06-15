@@ -12,32 +12,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {config: {time_units}} = require("../services/data.js");
-const {TypeReader, TypeReaderResult} = require("patron.js");
+'use strict';
+const { config: { time_units } } = require('../services/data.js');
+const { TypeReader, TypeReaderResult } = require('patron.js');
 
 module.exports = new class Timespan extends TypeReader {
   constructor() {
-    super({type: "timespan"});
+    super({ type: 'timespan' });
   }
 
   async read(cmd, msg, arg, args, val) {
     const unit = time_units[val.charAt(val.length - 1)];
 
-    if(unit === undefined)
-      return TypeReaderResult.fromError(cmd, "that unit of time is not accepted.");
-    else if(val.length === 1)
-      return TypeReaderResult.fromError(cmd, "provide an amount of time.");
+    if (!unit) {
+      return TypeReaderResult.fromError(cmd, 'you have provided an invalid time span.');
+    } else if (val.length === 1) {
+      return TypeReaderResult.fromError(cmd, 'provide an amount of time.');
+    }
 
     let number = Number(val.slice(0, val.length - 1));
 
-    if(number <= 0)
-      return TypeReaderResult.fromError(cmd, "negative timespans are not accepted.");
+    if (number <= 0) {
+      return TypeReaderResult.fromError(cmd, 'negative timespans are not accepted.');
+    }
 
     number *= unit;
 
-    if(!Number.isSafeInteger(number))
-      return TypeReaderResult.fromError(cmd, "that amount of time is too large.");
+    if (!Number.isSafeInteger(number)) {
+      return TypeReaderResult.fromError(cmd, 'that amount of time is too large.');
+    }
 
     return TypeReaderResult.fromSuccess(number);
   }

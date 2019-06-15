@@ -12,30 +12,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {Argument, Command} = require("patron.js");
-const db = require("../../services/database.js");
-const discord = require("../../utilities/discord.js");
+'use strict';
+const { Argument, Command } = require('patron.js');
+const db = require('../../services/database.js');
+const discord = require('../../utilities/discord.js');
 
 module.exports = new class SetCourtCategory extends Command {
   constructor() {
     super({
-      args: [new Argument({
-        example: "357419754358571011",
-        key: "channel",
-        name: "channel",
-        type: "category",
-        preconditions: ["usable_channel"],
-        remainder: true
-      })],
-      description: "Sets the Court category.",
-      groupName: "owners",
-      names: ["set_court_category"]
+      args: [
+        new Argument({
+          example: '357419754358571011',
+          key: 'channel',
+          name: 'channel',
+          type: 'category',
+          preconditions: ['usable_channel'],
+          remainder: true
+        })
+      ],
+      description: 'Sets the Court category.',
+      groupName: 'owners',
+      names: ['set_court_category']
     });
   }
 
   async run(msg, args) {
-    db.update("guilds", {
+    db.update('guilds', {
       guild_id: msg.channel.guild.id,
       court_category: args.channel.id
     });

@@ -12,31 +12,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const catch_discord = require("./catch_discord.js");
-const client = require("../services/client.js");
-const {config, constants} = require("../services/data.js");
-const msg_collector = require("../services/message_collector.js");
+'use strict';
+const catch_discord = require('./catch_discord.js');
+const client = require('../services/client.js');
+const { config, constants } = require('../services/data.js');
+const msg_collector = require('../services/message_collector.js');
 const create_message = catch_discord((...args) => client.createMessage(...args));
-const delete_message = catch_discord(client.deleteMessage);
+const delete_message = catch_discord(client.deleteMessage.bind(client));
 
 module.exports = {
   embed(options) {
-    if(options.color === undefined)
-      options.color = constants.default_colors[Math.floor(Math.random() * constants.default_colors.length)];
+    if (!options.color) {
+      options.color = constants
+        .default_colors[Math.floor(Math.random() * constants.default_colors.length)];
+    }
 
-    return {embed: options};
+    return { embed: options };
   },
 
   create_msg(channel, msg, color, file) {
     let result;
 
-    if(typeof msg === "string") {
+    if (typeof msg === 'string') {
       result = this.embed({
         color,
         description: msg
       });
-    }else{
+    } else {
       result = this.embed({
         color,
         ...msg
@@ -56,10 +58,10 @@ module.exports = {
       }, config.verify_timeout);
 
       msg_collector.add(
-        m => m.author.id === msg.author.id && m.content === "I'm sure",
+        m => m.author.id === msg.author.id && m.content === 'I\'m sure',
         yes => {
           clearTimeout(timeout);
-          delete_message(yes.channel, yes);
+          delete_message(yes.channel.id, yes.id);
           res(true);
         },
         msg.id
@@ -71,35 +73,43 @@ module.exports = {
     return `${user.username}#${user.discriminator}`;
   },
 
+  formatUsername(username) {
+    return username.replace(/ +/gi, '_').replace(/[^A-Z0-9_]+/gi, '');
+  },
+
   fetch_user(id) {
     const user = client.users.get(id);
 
-    if(!client.options.restMode || user !== undefined)
+    if (!client.options.restMode || user) {
       return user;
+    }
 
     return client.getRESTUser(id).catch(err => {
-      if(err.code !== constants.discord_err_codes.unknown_user)
+      if (err.code !== constants.discord_err_codes.unknown_user) {
         throw err;
+      }
     });
   },
 
   usable_role(guild, role) {
     const member = guild.members.get(client.user.id);
 
-    return member.permission.has("manageRoles") && this.hierarchy(member) > role.position;
+    return member.permission.has('manageRoles') && this.hierarchy(member) > role.position;
   },
 
   hierarchy(member) {
-    if(member.guild.ownerID === member.id)
+    if (member.guild.ownerID === member.id) {
       return Number.MAX_SAFE_INTEGER;
+    }
 
     let highest = 0;
 
-    for(let i = 0; i < member.roles.length; i++) {
+    for (let i = 0; i < member.roles.length; i++) {
       const role = member.guild.roles.get(member.roles[i]);
 
-      if(role.position > highest)
+      if (role.position > highest) {
         highest = role.position;
+      }
     }
 
     return highest;

@@ -12,10 +12,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {Handler} = require("patron.js");
-const {options} = require("./data.js");
-const registry = require("./registry.js");
+'use strict';
+const { Handler } = require('patron.js');
+const { options } = require('./data.js');
+const registry = require('./registry.js');
 
 module.exports = new Handler({
   ...options.handler,

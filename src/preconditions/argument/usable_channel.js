@@ -12,19 +12,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {ArgumentPrecondition, PreconditionResult} = require("patron.js");
-const client = require("../../services/client.js");
+'use strict';
+const { ArgumentPrecondition, PreconditionResult } = require('patron.js');
+const client = require('../../services/client.js');
 
 module.exports = new class UsableChannel extends ArgumentPrecondition {
   constructor() {
-    super({name: "usable_channel"});
+    super({ name: 'usable_channel' });
   }
 
   async run(cmd, msg, arg, args, val) {
-    if(val.permissionsOf(client.user.id).has("manageChannels"))
+    if (val.permissionsOf(client.user.id).has('manageChannels')) {
       return PreconditionResult.fromSuccess();
+    }
 
-    return PreconditionResult.fromError(cmd, "I can't use that channel.");
+    return PreconditionResult.fromError(cmd, 'I can\'t use that channel.');
   }
 }();

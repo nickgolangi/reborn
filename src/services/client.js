@@ -12,8 +12,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {auth, options} = require("./data.js");
-const {Client} = require("eris");
+'use strict';
+const { auth, options } = require('./data.js');
+const { Client } = require('eris');
 
 module.exports = new Client(auth.discord_token, options.client);

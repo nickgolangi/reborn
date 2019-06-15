@@ -12,21 +12,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const str = require("./string.js");
-const {TypeReaderResult} = require("patron.js");
+'use strict';
+const str = require('./string.js');
+const { TypeReaderResult } = require('patron.js');
+const maxResults = 5;
 
 function format_matches(matches, formatter) {
-  return str.list(matches.map(match => (formatter === undefined ? match.name : formatter(match))));
+  return str.list(matches.map(match => {
+    if (formatter) {
+      return formatter(match);
+    }
+
+    return match.name;
+  }));
 }
 
 module.exports = function(cmd, matches, err_msg, formatter) {
-  if(matches.length > 5)
-    return TypeReaderResult.fromError(cmd, `I found ${matches.length} matches, please be more specific.`);
-  else if(matches.length > 1)
-    return TypeReaderResult.fromError(cmd, `I found multiple matches: ${format_matches(matches, formatter)}`);
-  else if(matches.length === 1)
+  if (matches.length > maxResults) {
+    return TypeReaderResult.fromError(
+      cmd, `I found ${matches.length} matches, please be more specific.`
+    );
+  } else if (matches.length > 1) {
+    return TypeReaderResult.fromError(
+      cmd, `I found multiple matches: ${format_matches(matches, formatter)}`
+    );
+  } else if (matches.length === 1) {
     return TypeReaderResult.fromSuccess(matches[0]);
+  }
 
   return TypeReaderResult.fromError(cmd, err_msg);
 };

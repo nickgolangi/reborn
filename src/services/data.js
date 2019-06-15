@@ -12,26 +12,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const fs = require("fs");
-const path = require("path");
-const util = require("util");
-const yml = require("js-yaml");
+'use strict';
+const fs = require('fs');
+const path = require('path');
+const util = require('util');
+const yml = require('js-yaml');
 const read_dir = util.promisify(fs.readdir);
 const read_file = util.promisify(fs.readFile);
+const extensionLength = 4;
 
 module.exports = {
   async load() {
-    const dir = path.join(__dirname, "../data/");
+    const dir = path.join(__dirname, '../data/');
     const files = await read_dir(dir);
 
-    for(let i = 0; i < files.length; i++) {
-      if(files[i].toLowerCase().includes("example"))
+    for (let i = 0; i < files.length; i++) {
+      if (files[i].toLowerCase().includes('example')) {
         continue;
+      }
 
-      const file = await read_file(path.join(dir, files[i]), "utf8");
+      const file = await read_file(path.join(dir, files[i]), 'utf8');
 
-      this[files[i].slice(0, -4)] = yml.load(file);
+      this[files[i].slice(0, -extensionLength)] = yml.load(file);
     }
   }
 };

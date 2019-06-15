@@ -12,25 +12,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const db = require("../../services/database.js");
-const discord = require("../../utilities/discord.js");
-const {Precondition, PreconditionResult} = require("patron.js");
+'use strict';
+const db = require('../../services/database.js');
+const discord = require('../../utilities/discord.js');
+const { Precondition, PreconditionResult } = require('patron.js');
 
 module.exports = new class Judges extends Precondition {
   constructor() {
-    super({name: "judges"});
+    super({ name: 'judges' });
   }
 
   async run(cmd, msg) {
-    const {judge_role} = db.fetch("guilds", {guild_id: msg.channel.guild.id});
+    const { judge_role, court_category } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
     const role = msg.channel.guild.roles.get(judge_role);
+    const courtOnly = ['guilty', 'innocent'].includes(cmd.names[0]);
+    const courtChannel = court_category
+      && msg.channel.parentID
+      && msg.channel.parentID !== court_category;
 
-    if(judge_role === undefined || role === undefined || !discord.usable_role(msg.channel.guild, role))
-      return PreconditionResult.fromError(cmd, "the Judge role needs to be set.");
-    else if(msg.member.roles.includes(judge_role))
+    if (!judge_role || !role || !discord.usable_role(msg.channel.guild, role)) {
+      return PreconditionResult.fromError(cmd, 'the Judge role needs to be set.');
+    } else if (courtChannel && courtOnly) {
+      return PreconditionResult.fromError(
+        cmd, 'This command may only be used inside a court channel.'
+      );
+    } else if (msg.member.roles.includes(judge_role)) {
       return PreconditionResult.fromSuccess();
+    }
 
-    return PreconditionResult.fromError(cmd, "only Judges can do that.");
+    return PreconditionResult.fromError(
+      cmd, 'This command may only be used by a judge presiding over a court case.'
+    );
   }
 }();

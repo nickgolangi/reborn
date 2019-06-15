@@ -12,33 +12,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {Argument, Command} = require("patron.js");
-const db = require("../../services/database.js");
-const discord = require("../../utilities/discord.js");
+'use strict';
+const { Argument, Command } = require('patron.js');
+const db = require('../../services/database.js');
+const discord = require('../../utilities/discord.js');
 
 module.exports = new class SetWarrantChannel extends Command {
   constructor() {
     super({
-      args: [new Argument({
-        example: "#warrants",
-        key: "channel",
-        name: "channel",
-        type: "text_channel",
-        preconditions: ["usable_channel"],
-        remainder: true
-      })],
-      description: "Sets the Warrants channel.",
-      groupName: "owners",
-      names: ["set_warrant_channel"]
+      args: [
+        new Argument({
+          example: '#warrants',
+          key: 'channel',
+          name: 'channel',
+          type: 'text_channel',
+          preconditions: ['usable_channel'],
+          remainder: true
+        })
+      ],
+      description: 'Sets the Warrants channel.',
+      groupName: 'owners',
+      names: ['set_warrant_channel']
     });
   }
 
   async run(msg, args) {
-    db.update("guilds", {
+    db.update('guilds', {
       guild_id: msg.channel.guild.id,
       warrant_channel: args.channel.id
     });
-    await discord.create_msg(msg.channel, `I have set the Warrants channel to ${args.channel.mention}.`);
+    await discord.create_msg(
+      msg.channel, `I have set the Warrants channel to ${args.channel.mention}.`
+    );
   }
 }();

@@ -13,7 +13,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-const client = require('../services/client.js');
-const log = require('../utilities/logger.js');
 
-client.on('shardDisconnect', (err, id) => log.error(`Shard #${id}`, err));
+module.exports = {
+  msToTime(input) {
+    /* eslint-disable no-magic-numbers */
+    return {
+      milliseconds: parseInt(input % 1000 / 100),
+      seconds: parseInt(input / 1000 % 60),
+      minutes: parseInt(input / (1000 * 60) % 60),
+      hours: parseInt(input / (1000 * 60 * 60) % 24),
+      days: parseInt(input / (1000 * 60 * 60 * 24))
+    };
+    /* eslint-enable no-magic-numbers */
+  }
+};

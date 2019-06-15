@@ -12,54 +12,57 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {Argument, Command} = require("patron.js");
-const db = require("../../services/database.js");
-const discord = require("../../utilities/discord.js");
+'use strict';
+const { Argument, Command } = require('patron.js');
+const db = require('../../services/database.js');
+const discord = require('../../utilities/discord.js');
 
 module.exports = new class GrantWarrantForArrest extends Command {
   constructor() {
     super({
-      args: [new Argument({
-        example: "Murder",
-        key: "law",
-        name: "law",
-        type: "law"
-      }),
-      new Argument({
-        example: "John",
-        key: "member",
-        name: "member",
-        type: "member",
-        remainder: true
-      })],
-      description: "Grants a warrant to arrest a citizen.",
-      groupName: "courts",
-      names: ["grant_warrant_for_arrest"]
+      args: [
+        new Argument({
+          example: 'Murder',
+          key: 'law',
+          name: 'law',
+          type: 'law'
+        }),
+        new Argument({
+          example: 'John',
+          key: 'member',
+          name: 'member',
+          type: 'member',
+          remainder: true
+        })
+      ],
+      description: 'Grants a warrant to arrest a citizen.',
+      groupName: 'courts',
+      names: ['grant_warrant_for_arrest']
     });
   }
 
   async run(msg, args) {
-    const {warrant_channel} = db.fetch("guilds", {guild_id: msg.channel.guild.id});
+    const { warrant_channel } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
 
-    if(warrant_channel === undefined)
+    if (!warrant_channel) {
       return;
+    }
 
-    const verified = await discord.verify_msg(
-      msg,
-      "**Warning:** Handing out false warrants will result in impeachment. Type `I'm sure` if you are sure you want \
-to grant this warrant."
-    );
+    const verified = await discord.verify_msg(msg, '**Warning:** Handing out false warrants will \
+result in impeachment. Type `I\'m sure` if you are sure you want to grant this warrant.');
 
-    if(!verified)
+    if (!verified) {
       return;
+    }
 
-    db.insert("warrants", {
+    db.insert('warrants', {
       guild_id: msg.channel.guild.id,
       law_id: args.law.id,
       defendant_id: args.member.id,
       judge_id: msg.author.id
     });
-    await discord.create_msg(msg.channel, `I have set the Court category to ${args.channel.mention}.`);
+    await discord.create_msg(
+      msg.channel, `A warrant has been issued against ${args.member.mention}.`
+    );
   }
 }();

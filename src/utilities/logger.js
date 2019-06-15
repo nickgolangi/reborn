@@ -12,17 +12,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {config} = require("../services/data.js");
-const fs = require("fs");
-const path = require("path");
-const util = require("util");
+'use strict';
+const { config } = require('../services/data.js');
+const fs = require('fs');
+const path = require('path');
+const util = require('util');
 const append_file = util.promisify(fs.appendFile);
-const dir = path.join(__dirname, "../", config.logs_dir);
+const dir = path.join(__dirname, '../../', config.logs_dir);
 const mk_dir = util.promisify(fs.mkdir);
+const doubleDigit = 10;
 
 function padTime(unit) {
-  return unit < 10 ? `0${unit}` : String(unit);
+  return unit < doubleDigit ? `0${unit}` : String(unit);
 }
 
 module.exports = {
@@ -39,47 +40,52 @@ module.exports = {
   time() {
     const date = new Date();
 
-    return `${padTime(date.getHours())}:${padTime(date.getMinutes())}:${padTime(date.getSeconds())}`;
+    return `${padTime(date.getHours())}:${padTime(date.getMinutes())}:\
+${padTime(date.getSeconds())}`;
   },
 
   async load() {
     await mk_dir(dir).catch(err => {
-      if(err.code !== "EEXIST")
+      if (err.code !== 'EEXIST') {
         throw err;
+      }
     });
     await this.update();
   },
 
   writable() {
     return new Promise(res => {
-      if(this.stream.writable)
+      if (this.stream.writable) {
         return res();
+      }
 
-      this.stream.on("open", () => res());
+      this.stream.on('open', () => res());
     });
   },
 
   async update() {
     const date = new Date().getDate();
 
-    if(!this.stream || date !== this.date) {
-      if(this.stream !== false)
+    if (!this.stream || date !== this.date) {
+      if (this.stream !== false) {
         this.stream.end();
+      }
 
       this.date = date;
-      this.stream = fs.createWriteStream(path.join(dir, `${this.filename()}.txt`), {flags: "a"});
-      this.stream.on("error", err => {
+      this.stream = fs.createWriteStream(path.join(dir, `${this.filename()}.txt`), { flags: 'a' });
+      this.stream.on('error', err => {
         console.error(err);
         process.exit(1);
       });
-      this.stream.on("drain", () => {
-        if(this.stream.write(this.draining))
+      this.stream.on('drain', () => {
+        if (this.stream.write(this.draining)) {
           this.draining = false;
-        else
-          this.draining = "";
+        } else {
+          this.draining = '';
+        }
       });
       await this.writable();
-    }else if(this.stream.writable === false) {
+    } else if (this.stream.writable === false) {
       await this.writable();
     }
   },
@@ -90,36 +96,38 @@ module.exports = {
     let msg = `${this.time()} [${level}] ${util.format(data, ...args)}`;
 
     console[level.toLowerCase()](msg);
-    msg += "\n";
+    msg += '\n';
 
-    if(this.draining === false) {
-      if(!this.stream.write(msg))
-        this.draining = "";
-    }else{
+    if (this.draining === false) {
+      if (!this.stream.write(msg)) {
+        this.draining = '';
+      }
+    } else {
       this.draining += msg;
     }
 
-    if(level === "ERROR")
+    if (level === 'ERROR') {
       await append_file(path.join(dir, `${this.filename()}-err.txt`), msg);
+    }
   },
 
   trace(data, ...args) {
-    return this.log("TRACE", data, ...args);
+    return this.log('TRACE', data, ...args);
   },
 
   debug(data, ...args) {
-    return this.log("DEBUG", data, ...args);
+    return this.log('DEBUG', data, ...args);
   },
 
   info(data, ...args) {
-    return this.log("INFO", data, ...args);
+    return this.log('INFO', data, ...args);
   },
 
   warn(data, ...args) {
-    return this.log("WARN", data, ...args);
+    return this.log('WARN', data, ...args);
   },
 
   error(data, ...args) {
-    return this.log("ERROR", data, ...args);
+    return this.log('ERROR', data, ...args);
   }
 };

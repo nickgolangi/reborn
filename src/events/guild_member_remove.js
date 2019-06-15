@@ -12,18 +12,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const client = require("../services/client.js");
-const db = require("../services/database.js");
+'use strict';
+const client = require('../services/client.js');
+const db = require('../services/database.js');
 
-client.on("guildMemberRemove", (guild, member) => {
-  const detainment = db.fetch("detainments", {
+client.on('guildMemberRemove', (guild, member) => {
+  const detainment = db.fetch('detainments', {
     guild_id: guild.id,
     defendant_id: member.id,
     fled: 0,
-    served: false
+    served: 0
   });
 
-  if(detainment !== undefined)
+  if (detainment) {
     db.fled_detainment(detainment.id);
+  }
 });

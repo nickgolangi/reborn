@@ -17,21 +17,19 @@ const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 const { Precondition, PreconditionResult } = require('patron.js');
 
-module.exports = new class Officers extends Precondition {
+module.exports = new class CanImprison extends Precondition {
   constructor() {
-    super({ name: 'officers' });
+    super({ name: 'can_imprison' });
   }
 
   async run(cmd, msg) {
-    const { officer_role } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
-    const role = msg.channel.guild.roles.get(officer_role);
+    const { imprisoned_role } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
+    const role = msg.channel.guild.roles.get(imprisoned_role);
 
-    if (!officer_role || !role || !discord.usable_role(msg.channel.guild, role)) {
-      return PreconditionResult.fromError(cmd, 'the Officer role needs to be set.');
-    } else if (msg.member.roles.includes(officer_role)) {
-      return PreconditionResult.fromSuccess();
+    if (!imprisoned_role || !role || !discord.usable_role(msg.channel.guild, role)) {
+      return PreconditionResult.fromError(cmd, 'the Imprison role needs to be set.');
     }
 
-    return PreconditionResult.fromError(cmd, 'only Officers can do that.');
+    return PreconditionResult.fromSuccess();
   }
 }();

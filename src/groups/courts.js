@@ -12,11 +12,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {Group} = require("patron.js");
+'use strict';
+const { Group } = require('patron.js');
 
 module.exports = new Group({
-  description: "LAW AND ORDER!",
-  name: "courts",
-  preconditions: ["judges", "can_jail"]
+  description: 'LAW AND ORDER!',
+  name: 'courts',
+  preconditions: ['judges', 'can_jail']
 });

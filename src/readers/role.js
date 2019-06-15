@@ -12,33 +12,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const handle_matches = require("../utilities/handle_matches.js");
-const {TypeReader, TypeReaderResult} = require("patron.js");
+'use strict';
+const handle_matches = require('../utilities/handle_matches.js');
+const { TypeReader, TypeReaderResult } = require('patron.js');
 
 module.exports = new class Role extends TypeReader {
   constructor() {
-    super({type: "role"});
+    super({ type: 'role' });
   }
 
   async read(cmd, msg, arg, args, val) {
     let id = val.match(/<@&\d{14,20}>/);
 
-    if(id !== null || (id = val.match(/^\d{14,20}$/)) !== null) {
+    if (id !== null || (id = val.match(/^\d{14,20}$/)) !== null) {
       const role = msg.channel.guild.roles.get(id[id.length - 1]);
 
-      if(role !== undefined)
+      if (role) {
         return TypeReaderResult.fromSuccess(role);
+      }
     }
 
     let roles = msg.channel.guild.roles.filter(role => role.name === val);
 
-    if(roles.length !== 0)
-      return handle_matches(cmd, roles, "that role does not exist.");
+    if (roles.length !== 0) {
+      return handle_matches(cmd, roles, 'that role does not exist.');
+    }
 
     id = val.toLowerCase();
     roles = msg.channel.guild.roles.filter(role => role.name.toLowerCase().includes(id));
 
-    return handle_matches(cmd, roles, "that role does not exist.");
+    return handle_matches(cmd, roles, 'that role does not exist.');
   }
 }();

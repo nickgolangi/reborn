@@ -12,19 +12,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {Precondition, PreconditionResult} = require("patron.js");
+'use strict';
+const { Precondition, PreconditionResult } = require('patron.js');
 
 module.exports = new class Owners extends Precondition {
   constructor() {
-    super({name: "owners"});
+    super({ name: 'owners' });
   }
 
   async run(cmd, msg) {
-    if(msg.channel.guild !== undefined && msg.channel.guild.ownerID !== msg.author.id) {
+    if (msg.channel.guild && msg.channel.guild.ownerID !== msg.author.id) {
       return PreconditionResult.fromError(
         cmd,
-        "this command may only be used by the server owner."
+        'this command may only be used by the server owner.'
       );
     }
 

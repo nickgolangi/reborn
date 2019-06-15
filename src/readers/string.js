@@ -12,12 +12,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {TypeReader, TypeReaderResult} = require("patron.js");
+'use strict';
+const { TypeReader, TypeReaderResult } = require('patron.js');
 
 module.exports = new class Str extends TypeReader {
   constructor() {
-    super({type: "string"});
+    super({ type: 'string' });
   }
 
   async read(cmd, msg, arg, args, val) {

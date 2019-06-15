@@ -12,14 +12,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const db = require("../services/database.js");
-const handle_matches = require("../utilities/handle_matches.js");
-const {TypeReader} = require("patron.js");
+'use strict';
+const db = require('../services/database.js');
+const handle_matches = require('../utilities/handle_matches.js');
+const { TypeReader } = require('patron.js');
 
 module.exports = new class Warrant extends TypeReader {
   constructor() {
-    super({type: "warrant"});
+    super({ type: 'warrant' });
   }
 
   async read(cmd, msg, arg, args, val) {
@@ -28,7 +28,7 @@ module.exports = new class Warrant extends TypeReader {
     return handle_matches(
       cmd,
       warrants.filter(warrant => String(warrant.id) === val),
-      "that warrant does not exist."
+      'that warrant does not exist.'
     );
   }
 }();

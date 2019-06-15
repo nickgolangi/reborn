@@ -12,7 +12,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
+'use strict';
+
 module.exports = {
   collectors: new Map(),
 
@@ -24,15 +25,15 @@ module.exports = {
   },
 
   check(msg) {
-    for(const [key, val] of this.collectors) {
-      if(val.condition(msg)) {
+    for (const [key, val] of this.collectors) {
+      if (val.condition(msg)) {
         val.callback(msg);
-        this.collectors.remove(key);
+        this.remove(key);
       }
     }
   },
 
   remove(key) {
-    this.collectors.remove(key);
+    this.collectors.delete(key);
   }
 };

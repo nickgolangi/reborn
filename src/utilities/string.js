@@ -12,16 +12,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
+'use strict';
+const minAmount = 3;
+
 module.exports = {
   format(str, ...args) {
     return str.replace(/{(\d+)}/g, (_, a) => args[a]);
   },
 
-  list(arr, sep = "and") {
-    if(arr.length < 3)
+  list(arr, sep = 'and') {
+    if (arr.length < minAmount) {
       return arr.join(sep);
+    }
 
-    return `${arr.slice(0, arr.length - 1).join(", ")}, ${sep} ${arr[arr.length - 1]}`;
+    return `${arr.slice(0, arr.length - 1).join(', ')}, ${sep} ${arr[arr.length - 1]}`;
   }
 };

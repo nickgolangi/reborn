@@ -12,47 +12,49 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {Argument, Command} = require("patron.js");
-const catch_discord = require("../../utilities/catch_discord.js");
-const client = require("../../services/client.js");
-const db = require("../../services/database.js");
-const discord = require("../../utilities/discord.js");
-const addRole = catch_discord(client.addGuildMemberRole);
+'use strict';
+const { Argument, Command } = require('patron.js');
+const catch_discord = require('../../utilities/catch_discord.js');
+const client = require('../../services/client.js');
+const db = require('../../services/database.js');
+const discord = require('../../utilities/discord.js');
+const addRole = catch_discord(client.addGuildMemberRole.bind(client));
 
 module.exports = new class Detain extends Command {
   constructor() {
     super({
-      args: [new Argument({
-        example: "Nͥatͣeͫ763#0554",
-        key: "user",
-        name: "user",
-        type: "user",
-        remainder: true
-      })],
-      description: "Detain a citizen.",
-      groupName: "enforcement",
-      names: ["detain"]
+      preconditions: ['can_jail'],
+      args: [
+        new Argument({
+          example: 'Nͥatͣeͫ763#0554',
+          key: 'user',
+          name: 'user',
+          type: 'user',
+          remainder: true
+        })
+      ],
+      description: 'Detain a citizen.',
+      groupName: 'enforcement',
+      names: ['detain']
     });
   }
 
   async run(msg, args) {
-    const verified = await discord.verify_msg(
-      msg,
-      "**Warning:** Handing out false detainments will result in impeachment. Type `I'm sure` if you are sure you want \
-to detain."
-    );
+    const verified = await discord.verify_msg(msg, '**Warning:** Handing out false detainments \
+will result in impeachment. Type `I\'m sure` if you are sure you want to detain.');
 
-    if(!verified)
+    if (!verified) {
       return;
+    }
 
-    const {jailed_role} = db.fetch("guilds", {guild_id: msg.channel.guild.id});
+    const { jailed_role } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
     const member = msg.channel.guild.members.get(args.user.id);
 
-    if(member !== undefined)
+    if (member) {
       await addRole(msg.channel.guild.id, args.user.id, jailed_role);
+    }
 
-    db.insert("detainments", {
+    db.insert('detainments', {
       guild_id: msg.channel.guild.id,
       defendant_id: args.user.id,
       officer_id: msg.author.id

@@ -12,12 +12,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const client = require("../services/client.js");
-const log = require("../utilities/logger.js");
-const {options} = require("../services/data.js");
+'use strict';
+const client = require('../services/client.js');
+const log = require('../utilities/logger.js');
+const { options } = require('../services/data.js');
 
-client.on("ready", () => {
+client.on('ready', () => {
   client.editStatus(options.status);
-  log.info("Ready!");
+  log.info('Ready!');
 });

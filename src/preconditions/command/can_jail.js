@@ -12,22 +12,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const db = require("../../services/database.js");
-const discord = require("../../utilities/discord.js");
-const {Precondition, PreconditionResult} = require("patron.js");
+'use strict';
+const db = require('../../services/database.js');
+const discord = require('../../utilities/discord.js');
+const { Precondition, PreconditionResult } = require('patron.js');
 
 module.exports = new class CanJail extends Precondition {
   constructor() {
-    super({name: "can_jail"});
+    super({ name: 'can_jail' });
   }
 
   async run(cmd, msg) {
-    const {jailed_role} = db.fetch("guilds", {guild_id: msg.channel.guild.id});
+    const { jailed_role } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
     const role = msg.channel.guild.roles.get(jailed_role);
 
-    if(jailed_role === undefined || role === undefined || !discord.usable_role(msg.channel.guild, role))
-      return PreconditionResult.fromError(cmd, "the Jailed role needs to be set.");
+    if (!jailed_role || !role || !discord.usable_role(msg.channel.guild, role)) {
+      return PreconditionResult.fromError(cmd, 'the Jailed role needs to be set.');
+    }
 
     return PreconditionResult.fromSuccess();
   }

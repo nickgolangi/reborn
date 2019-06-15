@@ -12,32 +12,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {Argument, Command} = require("patron.js");
-const db = require("../../services/database.js");
-const discord = require("../../utilities/discord.js");
+'use strict';
+const { Argument, Command } = require('patron.js');
+const db = require('../../services/database.js');
+const discord = require('../../utilities/discord.js');
 
 module.exports = new class KickFromCourt extends Command {
   constructor() {
     super({
-      args: [new Argument({
-        example: "Joeychin01",
-        key: "member",
-        name: "member",
-        type: "member",
-        remainder: true
-      })],
-      description: "Kicks a citizen from speaking at a hearing.",
-      groupName: "courts",
-      names: ["kick_from_court"]
+      args: [
+        new Argument({
+          example: 'Joeychin01',
+          key: 'member',
+          name: 'member',
+          type: 'member',
+          remainder: true
+        })
+      ],
+      description: 'Kicks a citizen from speaking at a hearing.',
+      groupName: 'courts',
+      names: ['kick_from_court']
     });
   }
 
   async run(msg, args) {
     const court = db.get_channel_case(msg.channel.id);
 
-    if(court === undefined)
+    if (!court) {
       return;
+    }
 
     await msg.channel.deletePermission(args.member.id);
     await discord.create_msg(msg.channel, `Added ${discord.tag(args.member)}.`);

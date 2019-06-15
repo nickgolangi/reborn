@@ -12,19 +12,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
-const {ArgumentPrecondition, PreconditionResult} = require("patron.js");
-const discord = require("../../utilities/discord.js");
+'use strict';
+const { ArgumentPrecondition, PreconditionResult } = require('patron.js');
+const discord = require('../../utilities/discord.js');
 
 module.exports = new class UsableRole extends ArgumentPrecondition {
   constructor() {
-    super({name: "usable_role"});
+    super({ name: 'usable_role' });
   }
 
   async run(cmd, msg, arg, args, val) {
-    if(discord.usable_role(msg.channel.guild, val))
+    if (discord.usable_role(msg.channel.guild, val)) {
       return PreconditionResult.fromSuccess();
+    }
 
-    return PreconditionResult.fromError(cmd, "I can't use that role.");
+    return PreconditionResult.fromError(cmd, 'I can\'t use that role.');
   }
 }();

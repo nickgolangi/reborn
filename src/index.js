@@ -12,11 +12,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-"use strict";
+'use strict';
 // Set up the process.
-process.env.TZ = "UTC";
+process.env.TZ = 'UTC';
 
-const {RequireAll} = require("patron.js");
+const { RequireAll } = require('patron.js');
 let log = console;
 
 function log_error(err) {
@@ -24,12 +24,12 @@ function log_error(err) {
   process.exit(1);
 }
 
-process.on("uncaughtException", log_error);
-process.on("unhandledRejection", log_error);
+process.on('uncaughtException', log_error);
+process.on('unhandledRejection', log_error);
 
 // Handle prerequisites.
-const path = require("path");
-const data = require("./services/data.js");
+const path = require('path');
+const data = require('./services/data.js');
 
 function requireAll(dir) {
   return RequireAll(path.join(__dirname, dir));
@@ -38,20 +38,20 @@ function requireAll(dir) {
 // Initialize and run the bot.
 (async function() {
   await data.load();
-  log = require("./utilities/logger.js");
+  log = require('./utilities/logger.js');
   await log.load();
 
-  const client = require("./services/client.js");
-  const db = require("./services/database.js");
-  const registry = require("./services/registry.js");
+  const client = require('./services/client.js');
+  const db = require('./services/database.js');
+  const registry = require('./services/registry.js');
 
   db.load();
   registry
-    .registerArgumentPreconditions(await requireAll("./preconditions/argument/"))
-    .registerPreconditions(await requireAll("./preconditions/command/"))
-    .registerTypeReaders(await requireAll("./readers/"))
-    .registerGroups(await requireAll("./groups/"))
-    .registerCommands(await requireAll("./commands/"));
-  await requireAll("./events/");
+    .registerArgumentPreconditions(await requireAll('./preconditions/argument/'))
+    .registerPreconditions(await requireAll('./preconditions/command/'))
+    .registerTypeReaders(await requireAll('./readers/'))
+    .registerGroups(await requireAll('./groups/'))
+    .registerCommands(await requireAll('./commands/'));
+  await requireAll('./events/');
   await client.connect();
-})().catch(console.error/* err => log_error(err)*/);
+}()).catch(console.error);
