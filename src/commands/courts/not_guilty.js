@@ -20,12 +20,11 @@ const verdict = require('../../enums/verdict.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 const removeRole = catch_discord(client.removeGuildMemberRole.bind(client));
-const half_hour = 18e5;
 
-module.exports = new class Innocent extends Command {
+module.exports = new class NotGuilty extends Command {
   constructor() {
     super({
-      preconditions: ['court_only', 'can_trial'],
+      preconditions: ['court_only', 'can_trial', 'judge_creator'],
       args: [
         new Argument({
           example: '"Set this man free!"',
@@ -36,13 +35,13 @@ module.exports = new class Innocent extends Command {
       ],
       description: 'Declares an innocent verdict in court.',
       groupName: 'courts',
-      names: ['innocent']
+      names: ['not_guilty']
     });
   }
 
   async run(msg, args) {
     const {
-      channel_id, created_at, defendant_id, id: case_id
+      channel_id, defendant_id, id: case_id
     } = db.get_channel_case(msg.channel.id);
     const defendant = msg.channel.guild.members.get(defendant_id);
 
@@ -50,15 +49,11 @@ module.exports = new class Innocent extends Command {
       return;
     }
 
-    const timeElapsed = Date.now() - created_at;
     const currrent_verdict = db.get_verdict(case_id);
     const finished = currrent_verdict && (currrent_verdict.verdict === verdict.guilty
       || currrent_verdict.verdict === verdict.innocent);
 
-    if (timeElapsed < half_hour) {
-      return CommandResult.fromError('A verdict can only be delivered 30 minutes \
-after the case has started.');
-    } else if (finished) {
+    if (finished) {
       return CommandResult.fromError('This case has already reached a verdict.');
     }
 
@@ -85,7 +80,7 @@ result in an impeachment. Type \`I'm sure\` if this is your final verdict.`
 
     db.insert('verdicts', update);
     await discord.create_msg(
-      msg.channel, `${prefix}${defendant.mention} has been found innocent and was set free.`
+      msg.channel, `${prefix} The court has found ${defendant.mention} not guilty.`
     );
   }
 

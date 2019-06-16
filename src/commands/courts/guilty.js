@@ -28,7 +28,7 @@ const repeat_felon_count = 3;
 module.exports = new class Guilty extends Command {
   constructor() {
     super({
-      preconditions: ['court_only', 'can_trial', 'can_imprison'],
+      preconditions: ['court_only', 'can_trial', 'can_imprison', 'judge_creator'],
       args: [
         new Argument({
           example: '"Criminal scum!"',

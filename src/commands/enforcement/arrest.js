@@ -13,13 +13,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-const { Argument, Command, CommandResult } = require('patron.js');
+const { Argument, Command, MultiMutex } = require('patron.js');
 const catch_discord = require('../../utilities/catch_discord.js');
 const client = require('../../services/client.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 const create_channel = catch_discord(client.createChannel.bind(client));
 const addRole = catch_discord(client.addGuildMemberRole.bind(client));
+const arrest_message = `Executing unlawful warrants will result in \
+impeachment and **national disgrace**.
+
+If you **ANY DOUBTS WHATSOEVER ABOUT THE VALIDITY OF THIS WARRANT**, \
+do not proceed with this arrest.
+
+__IGNORANCE IS NOT A DEFENSE.__
+
+Furthermore, if you perform this arrest, **you will need to prosecute it in court.** \
+This may take days. This will be time consuming. If you fail to properly prosecute the case, \
+you will be impeached.
+
+If you are sure you wish to proceed with the arrest given the aforementioned terms, please \
+type \`yes\`.`;
 
 module.exports = new class Arrest extends Command {
   constructor() {
@@ -31,13 +45,6 @@ module.exports = new class Arrest extends Command {
           key: 'warrant',
           name: 'warrant',
           type: 'warrant'
-        }),
-        new Argument({
-          example: 'Nͥatͣeͫ763#0554',
-          key: 'member',
-          name: 'member',
-          type: 'member',
-          remainder: true
         })
       ],
       description: 'Arrest a citizen.',
@@ -45,73 +52,79 @@ module.exports = new class Arrest extends Command {
       names: ['arrest']
     });
     this.bitfield = 2048;
+    this.mutex = new MultiMutex();
   }
 
   async run(msg, args) {
-    if (args.warrant.defendant_id !== args.member.id) {
-      return CommandResult.fromError(`This warrant isn't issued for ${args.member.mention}.`);
-    }
+    this.mutex.sync(`${msg.channel.guild.id}-${args.warrant.id}`, async () => {
+      const {
+        court_category, judge_role, officer_role, trial_role
+      } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
+      const o_role = msg.channel.guild.roles.get(officer_role);
+      const category = msg.channel.guild.channels.get(court_category);
+      const n_warrant = db.fetch_warrants(msg.channel.guild.id).find(x => x.id === args.warrant.id);
 
-    const {
-      court_category, judge_role, officer_role, trial_role
-    } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
-    const o_role = msg.channel.guild.roles.get(officer_role);
-    const category = msg.channel.guild.channels.get(court_category);
+      if (!officer_role || !o_role || !discord.usable_role(msg.channel.guild, o_role)
+        || !court_category || !category || !trial_role || n_warrant.executed) {
+        return;
+      }
 
-    if (!officer_role || !o_role || !discord.usable_role(msg.channel.guild, o_role)
-      || !court_category || !category || !trial_role) {
-      return;
-    }
+      const prefix = `**${discord.tag(msg.author)}**, `;
+      const verified = await discord.verify_msg(msg, `${arrest_message}`, null, 'yes');
 
-    const prefix = `**${discord.tag(msg.author)}**, `;
-    const verified = await discord.verify_msg(msg, `${prefix}**Warning:** Handing out false \
-arrests will result in impeachment. Type \`I'm sure\` if you are sure you want to arrest.`);
+      if (!verified) {
+        return;
+      }
 
-    if (!verified) {
-      return;
-    }
+      const detainment = db.fetch('detainments', {
+        guild_id: msg.channel.guild.id, officer_id: msg.author.id,
+        defendant_id: args.warrant.defendant_id, served: 0
+      });
 
-    const detainment = db.fetch('detainments', {
-      guild_id: msg.channel.guild.id,
-      officer_id: msg.author.id,
-      defendant_id:
-      args.member.id,
-      served: 0
+      if (detainment) {
+        db.serve_detainment(detainment.id);
+      }
+
+      const judge = this.getJudge(msg.channel.guild, args.warrant, judge_role);
+      const officer = msg.author;
+      let defendant = msg.channel.guild.members.get(args.warrant.defendant_id);
+
+      if (defendant) {
+        defendant = defendant.user;
+      } else {
+        defendant = await msg._client.getRESTUser(args.warrant.defendant_id);
+      }
+
+      await this.setUp({
+        guild: msg.channel.guild, defendant, judge, officer,
+        warrant: args.warrant, jailed: trial_role, category: court_category
+      });
+      await discord.create_msg(msg.channel, `${prefix}I have arrested ${defendant.mention}.`);
     });
-
-    if (detainment) {
-      db.serve_detainment(detainment.id);
-    }
-
-    const judge = this.getJudge(msg.channel.guild, args.warrant, judge_role);
-    const officer = msg.author;
-
-    await this.setUp({
-      guild: msg.channel.guild, defendant: args.member,
-      judge, officer,
-      warrant: args.warrant, jailed: trial_role, category: court_category
-    });
-    await discord.create_msg(msg.channel, `${prefix}I have arrested ${args.member.mention}.`);
   }
 
   async setUp({ guild, defendant, judge, officer, warrant, jailed, category }) {
     const channel = await create_channel(
       guild.id,
       `${discord.formatUsername(officer.username)}-VS-\
-${discord.formatUsername(defendant.user.username)}`,
+${discord.formatUsername(defendant.username)}`,
       0,
       null,
       category
     );
-    const edits = [judge.id, officer.id, defendant.id];
+    const edits = [judge.id, officer.id, defendant.id, guild.shard.client.user.id];
 
     await Promise.all(edits.map(x => channel.editPermission(x, this.bitfield, 0, 'member')));
+
+    const law = db.get_law(warrant.law_id);
+
     await discord.create_msg(
       channel,
-      '**Judge Commands:**\n`!allow_in_court <member>` - allow a citizen to speak in this hearing\n\
-`!kick_from_court <member>` - kick a citizen from this hearing\n\
-`!guilty <opinion> [sentence]` - declare a guilty verdict\n\
-`!innocent <opinion>` - declare an innocent verdict'
+      `${officer.mention} VS ${defendant.mention}
+
+${judge.mention} will be presiding over this court proceeding.
+
+The defense is accused of violating the following law: ${law.name}.`
     );
     db.insert('cases', {
       guild_id: guild.id,
@@ -123,6 +136,7 @@ ${discord.formatUsername(defendant.user.username)}`,
       plaintiff_id: officer.id
     });
     await addRole(guild.id, defendant.id, jailed);
+    db.close_warrant(warrant.id);
   }
 
   getJudge(guild, warrant, judgeRole) {

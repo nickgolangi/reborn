@@ -51,6 +51,8 @@ module.exports = new class Warrants extends Command {
 
       if (!warrants) {
         return CommandResult.fromError('This warrant does not exist.');
+      } else if (warrants.executed) {
+        return CommandResult.fromError('This warrant has already been served.');
       }
 
       warrants = [warrants];

@@ -48,7 +48,7 @@ module.exports = {
     return create_message(channel.id, result, file);
   },
 
-  verify_msg(msg, content, file) {
+  verify_msg(msg, content, file, verify = 'I\'m sure') {
     return new Promise(async res => {
       await this.create_msg(msg.channel, content, null, file);
 
@@ -58,7 +58,7 @@ module.exports = {
       }, config.verify_timeout);
 
       msg_collector.add(
-        m => m.author.id === msg.author.id && m.content.toLowerCase() === 'i\'m sure',
+        m => m.author.id === msg.author.id && m.content.toLowerCase() === verify.toLowerCase(),
         yes => {
           clearTimeout(timeout);
           delete_message(yes.channel.id, yes.id);

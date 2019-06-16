@@ -72,7 +72,7 @@ module.exports = {
 
   update(table, changed) {
     const now = Date.now();
-    const existing = this.db.prepare(str.format(queries.select, table));
+    const existing = this.db.prepare(str.format(queries.select, table)).get(changed.guild_id);
 
     changed.created_at = existing && existing.created_at ? existing.created_at : now;
     changed.last_modified_at = now;
@@ -113,15 +113,19 @@ module.exports = {
     return queries.fled_detainment.run(id);
   },
 
-  fetch_pending_cases() {
+  fetch_pending_verdicts() {
     return this.db.prepare(str.format(
-      queries.select_pending_cases,
+      queries.select_pending_verdicts,
       Math.floor(config.max_case_time / caseTime)
     )).all();
   },
 
   close_case(id) {
     return queries.close_case.run(id);
+  },
+
+  close_warrant(id) {
+    return queries.close_warrant.run(id);
   },
 
   get_channel_case(channel_id) {

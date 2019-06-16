@@ -100,6 +100,8 @@ select_pending_verdicts: |-
 
 close_case: UPDATE verdicts SET verdict = 0 WHERE id = ?
 
+close_warrant: UPDATE warrants SET executed = 1 WHERE id = ?
+
 select_channel_case: SELECT * FROM cases WHERE channel_id = ?
 
 select_cases: SELECT * FROM cases WHERE guild_id = ?
@@ -114,4 +116,4 @@ select_warrants: SELECT * FROM warrants WHERE guild_id = ? AND executed = 0
 
 select_verdicts: SELECT * FROM verdicts WHERE guild_id = ? AND defendant_id = ?
 
-select_verdict: SELECT * FROM verdicts where case_id = ?
+select_verdict: SELECT * FROM verdicts WHERE case_id = ?

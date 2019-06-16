@@ -13,22 +13,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-const db = require('../services/database.js');
-const handle_matches = require('../utilities/handle_matches.js');
-const { TypeReader } = require('patron.js');
+const db = require('../../services/database.js');
+const { Precondition, PreconditionResult } = require('patron.js');
 
-module.exports = new class Warrant extends TypeReader {
+module.exports = new class JudgeCreator extends Precondition {
   constructor() {
-    super({ type: 'warrant' });
+    super({ name: 'judge_creator' });
   }
 
-  async read(cmd, msg, arg, args, val) {
-    const warrants = db.fetch_warrants(msg.channel.guild.id);
+  async run(cmd, msg) {
+    const { judge_id } = db.get_channel_case(msg.channel.id);
+    const judge = msg.channel.guild.members.get(judge_id);
 
-    return handle_matches(
-      cmd,
-      warrants.filter(warrant => String(warrant.id) === val),
-      'This warrant does not exist.'
-    );
+    if (msg.author.id !== judge_id && judge) {
+      return PreconditionResult.fromError(cmd, `Only ${judge.mention} may use this command.`);
+    }
+
+    return PreconditionResult.fromSuccess();
   }
 }();

@@ -13,6 +13,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
+/*
+ * TODO:
+ * - Invalid warrants after they expire
+ */
 // Set up the process.
 process.env.TZ = 'UTC';
 

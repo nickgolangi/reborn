@@ -24,7 +24,7 @@ const remove_role = catch_discord(client.removeGuildMemberRole.bind(client));
 const tickTime = 10;
 
 Timer(() => {
-  const pending = db.fetch_pending_cases();
+  const pending = db.fetch_pending_verdicts();
 
   for (let i = 0; i < pending.length; i++) {
     const { judge_role, jailed_role } = db.fetch('guilds', { guild_id: pending[i].guild_id });
@@ -37,9 +37,10 @@ Timer(() => {
       return;
     }
 
-    const defendant = guild.members.get(pending[i].defendant_id);
-    const judge = guild.members.get(pending[i].judge_id);
-    const channel = guild.channels.get(pending[i].channel_id);
+    const channel_case = db.get_case(pending[i].case_id);
+    const defendant = guild.members.get(channel_case.defendant_id);
+    const judge = guild.members.get(channel_case.judge_id);
+    const channel = guild.channels.get(channel_case.channel_id);
 
     if (channel) {
       delete_channel(channel);
@@ -47,14 +48,14 @@ Timer(() => {
 
     if (defendant) {
       if (defendant.roles.includes(jailed_role)) {
-        remove_role(guild.id, pending[i].defendant_id, jailed_role);
+        remove_role(guild.id, channel_case.defendant_id, jailed_role);
       }
 
       if (judge && judge.roles.includes(judge_role)) {
-        remove_role(guild.id, pending[i].judge_id, judge_role);
+        remove_role(guild.id, channel_case.judge_id, judge_role);
       }
     }
 
-    db.close_case(pending[i].id);
+    db.close_case(channel_case.id);
   }
 }, config.max_case_time / tickTime);
