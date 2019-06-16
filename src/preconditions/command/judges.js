@@ -23,19 +23,11 @@ module.exports = new class Judges extends Precondition {
   }
 
   async run(cmd, msg) {
-    const { judge_role, court_category } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
+    const { judge_role } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
     const role = msg.channel.guild.roles.get(judge_role);
-    const courtOnly = ['guilty', 'innocent'].includes(cmd.names[0]);
-    const courtChannel = court_category
-      && msg.channel.parentID
-      && msg.channel.parentID !== court_category;
 
     if (!judge_role || !role || !discord.usable_role(msg.channel.guild, role)) {
       return PreconditionResult.fromError(cmd, 'the Judge role needs to be set.');
-    } else if (courtChannel && courtOnly) {
-      return PreconditionResult.fromError(
-        cmd, 'This command may only be used inside a court channel.'
-      );
     } else if (msg.member.roles.includes(judge_role)) {
       return PreconditionResult.fromSuccess();
     }

@@ -41,6 +41,9 @@ module.exports = new class SetJudgeRole extends Command {
       guild_id: msg.channel.guild.id,
       judge_role: args.role.id
     });
-    await discord.create_msg(msg.channel, `I have set the Judge role to ${args.role.mention}.`);
+    await discord.create_msg(
+      msg.channel,
+      `**${discord.tag(msg.author)}**, I have set the Judge role to ${args.role.mention}.`
+    );
   }
 }();

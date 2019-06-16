@@ -28,7 +28,7 @@ const repeat_felon_count = 3;
 module.exports = new class Guilty extends Command {
   constructor() {
     super({
-      preconditions: ['can_imprison'],
+      preconditions: ['court_only', 'can_trial', 'can_imprison'],
       args: [
         new Argument({
           example: '"Criminal scum!"',
@@ -40,7 +40,7 @@ module.exports = new class Guilty extends Command {
           example: '5h',
           key: 'sentence',
           name: 'sentence',
-          type: 'timespan'
+          type: 'time'
         })
       ],
       description: 'Declares a guilty verdict in court.',
@@ -68,13 +68,14 @@ module.exports = new class Guilty extends Command {
       return CommandResult.fromError('A verdict can only be delivered 30 minutes \
 after the case has started.');
     } else if (finished) {
-      return CommandResult.fromError('This case has already reached a verdict');
+      return CommandResult.fromError('This case has already reached a verdict.');
     }
 
+    const prefix = `**${discord.tag(msg.author)}**, `;
     const verified = await discord.verify_msg(
       msg,
-      '**Warning:** Are you sure you want to deliver this verdict? Unjust verdicts will result in \
-an impeachment. Type `I\'m sure` if this is your final verdict.'
+      `${prefix}**Warning:** Are you sure you want to deliver this verdict? Unjust verdicts will \
+result in an impeachment. Type \`I'm sure\` if this is your final verdict.`
     );
 
     if (!verified) {
@@ -94,7 +95,7 @@ ${hours} hours in prison${repeated ? ` for repeatedly breaking the law \`${law.n
 charged with committing a misdemeanor'}.`;
 
     await discord.create_msg(
-      msg.channel, `${defendant.mention} has been found guilty and was ${ending}`
+      msg.channel, `${prefix}${defendant.mention} has been found guilty and was ${ending}`
     );
   }
 
@@ -129,21 +130,17 @@ charged with committing a misdemeanor'}.`;
     }
 
     const addSentence = law.mandatory_felony || (!law.mandatory_felony && mute);
+    const { trial_role, imprisoned_role } = db.fetch('guilds', { guild_id: ids.guild });
+
+    await removeRole(ids.guild, ids.defendant, trial_role);
 
     if (addSentence) {
       update.sentence = sentence;
-      await this.imprison(ids.guild, ids.defendant);
+      await addRole(ids.guild, ids.defendant, imprisoned_role);
     }
 
     db.insert('verdicts', update);
 
     return mute;
-  }
-
-  async imprison(guild_id, defendant_id) {
-    const { trial_role, imprisoned_role } = db.fetch('guilds', { guild_id });
-
-    await removeRole(guild_id, defendant_id, trial_role);
-    await addRole(guild_id, defendant_id, imprisoned_role);
   }
 }();

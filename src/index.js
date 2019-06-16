@@ -46,6 +46,8 @@ function requireAll(dir) {
   const registry = require('./services/registry.js');
 
   db.load();
+  await registry.registerLibraryTypeReaders();
+  await registry.registerGlobalTypeReaders();
   registry
     .registerArgumentPreconditions(await requireAll('./preconditions/argument/'))
     .registerPreconditions(await requireAll('./preconditions/command/'))

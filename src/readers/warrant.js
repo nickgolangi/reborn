@@ -28,7 +28,7 @@ module.exports = new class Warrant extends TypeReader {
     return handle_matches(
       cmd,
       warrants.filter(warrant => String(warrant.id) === val),
-      'that warrant does not exist.'
+      'FUCK YOU, GET A WARRANT!'
     );
   }
 }();

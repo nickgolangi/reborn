@@ -13,14 +13,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-const { TypeReader, TypeReaderResult } = require('patron.js');
+const db = require('../../services/database.js');
+const { Precondition, PreconditionResult } = require('patron.js');
 
-module.exports = new class Str extends TypeReader {
+module.exports = new class CourtOnly extends Precondition {
   constructor() {
-    super({ type: 'string' });
+    super({ name: 'court_only' });
   }
 
-  async read(cmd, msg, arg, args, val) {
-    return TypeReaderResult.fromSuccess(val);
+  async run(cmd, msg) {
+    const { court_category } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
+    const court_channel = msg.channel.guild.channels.get(court_category);
+
+    if (!court_category || !court_channel) {
+      return PreconditionResult.fromError(cmd, 'the Court category needs to be set.');
+    } else if (court_category && msg.channel.parentID && msg.channel.parentID !== court_category) {
+      return PreconditionResult.fromError(
+        cmd, 'This command may only be used inside a court channel.'
+      );
+    }
+
+    return PreconditionResult.fromSuccess();
   }
 }();

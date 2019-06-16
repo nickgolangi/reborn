@@ -25,6 +25,7 @@ const half_hour = 18e5;
 module.exports = new class Innocent extends Command {
   constructor() {
     super({
+      preconditions: ['court_only', 'can_trial'],
       args: [
         new Argument({
           example: '"Set this man free!"',
@@ -58,13 +59,14 @@ module.exports = new class Innocent extends Command {
       return CommandResult.fromError('A verdict can only be delivered 30 minutes \
 after the case has started.');
     } else if (finished) {
-      return CommandResult.fromError('This case has already reached a verdict');
+      return CommandResult.fromError('This case has already reached a verdict.');
     }
 
+    const prefix = `**${discord.tag(msg.author)}**, `;
     const verified = await discord.verify_msg(
       msg,
-      '**Warning:** Are you sure you want to deliver this verdict? Unjust verdicts will result in \
-an impeachment. Type `I\'m sure` if this is your final verdict.'
+      `${prefix}**Warning:** Are you sure you want to deliver this verdict? Unjust verdicts will \
+result in an impeachment. Type \`I'm sure\` if this is your final verdict.`
     );
 
     if (!verified) {
@@ -83,7 +85,7 @@ an impeachment. Type `I\'m sure` if this is your final verdict.'
 
     db.insert('verdicts', update);
     await discord.create_msg(
-      msg.channel, `${defendant.mention} has been found innocent and was set free.`
+      msg.channel, `${prefix}${defendant.mention} has been found innocent and was set free.`
     );
   }
 

@@ -40,8 +40,9 @@ module.exports = new class Detain extends Command {
   }
 
   async run(msg, args) {
-    const verified = await discord.verify_msg(msg, '**Warning:** Handing out false detainments \
-will result in impeachment. Type `I\'m sure` if you are sure you want to detain.');
+    const prefix = `**${discord.tag(msg.author)}**, `;
+    const verified = await discord.verify_msg(msg, `${prefix}**Warning:** Handing out false \
+detainments will result in impeachment. Type \`I'm sure\` if you are sure you want to detain.`);
 
     if (!verified) {
       return;
@@ -59,6 +60,6 @@ will result in impeachment. Type `I\'m sure` if you are sure you want to detain.
       defendant_id: args.user.id,
       officer_id: msg.author.id
     });
-    await discord.create_msg(msg.channel, `I have detained ${args.user.mention}.`);
+    await discord.create_msg(msg.channel, `${prefix}I have detained ${args.user.mention}.`);
   }
 }();

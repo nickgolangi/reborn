@@ -20,6 +20,7 @@ const discord = require('../../utilities/discord.js');
 module.exports = new class AllowInCourt extends Command {
   constructor() {
     super({
+      preconditions: ['judges'],
       args: [
         new Argument({
           example: 'Stipendi',
@@ -44,6 +45,8 @@ module.exports = new class AllowInCourt extends Command {
     }
 
     await msg.channel.editPermission(args.member.id, this.bitfield, 0, 'member');
-    await discord.create_msg(msg.channel, `Added ${discord.tag(args.member)}.`);
+    await discord.create_msg(
+      msg.channel, `**${discord.tag(msg.author)}**, Added ${discord.tag(args.member)}.`
+    );
   }
 }();

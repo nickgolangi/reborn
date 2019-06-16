@@ -20,6 +20,7 @@ const discord = require('../../utilities/discord.js');
 module.exports = new class KickFromCourt extends Command {
   constructor() {
     super({
+      preconditions: ['judges'],
       args: [
         new Argument({
           example: 'Joeychin01',
@@ -43,6 +44,8 @@ module.exports = new class KickFromCourt extends Command {
     }
 
     await msg.channel.deletePermission(args.member.id);
-    await discord.create_msg(msg.channel, `Added ${discord.tag(args.member)}.`);
+    await discord.create_msg(
+      msg.channel, `**${discord.tag(msg.author)}**, Removed ${discord.tag(args.member)}.`
+    );
   }
 }();

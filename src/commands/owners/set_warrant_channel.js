@@ -25,7 +25,7 @@ module.exports = new class SetWarrantChannel extends Command {
           example: '#warrants',
           key: 'channel',
           name: 'channel',
-          type: 'text_channel',
+          type: 'textchannel',
           preconditions: ['usable_channel'],
           remainder: true
         })
@@ -42,7 +42,8 @@ module.exports = new class SetWarrantChannel extends Command {
       warrant_channel: args.channel.id
     });
     await discord.create_msg(
-      msg.channel, `I have set the Warrants channel to ${args.channel.mention}.`
+      msg.channel,
+      `**${discord.tag(msg.author)}**, I have set the Warrants channel to ${args.channel.mention}.`
     );
   }
 }();

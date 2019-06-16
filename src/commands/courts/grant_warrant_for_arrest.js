@@ -20,18 +20,19 @@ const discord = require('../../utilities/discord.js');
 module.exports = new class GrantWarrantForArrest extends Command {
   constructor() {
     super({
+      preconditions: ['judges'],
       args: [
-        new Argument({
-          example: 'Murder',
-          key: 'law',
-          name: 'law',
-          type: 'law'
-        }),
         new Argument({
           example: 'John',
           key: 'member',
           name: 'member',
-          type: 'member',
+          type: 'member'
+        }),
+        new Argument({
+          example: 'Murder',
+          key: 'law',
+          name: 'law',
+          type: 'law',
           remainder: true
         })
       ],
@@ -48,8 +49,10 @@ module.exports = new class GrantWarrantForArrest extends Command {
       return;
     }
 
-    const verified = await discord.verify_msg(msg, '**Warning:** Handing out false warrants will \
-result in impeachment. Type `I\'m sure` if you are sure you want to grant this warrant.');
+    const verified = await discord.verify_msg(
+      msg, `**${discord.tag(msg.author)}**, **Warning:** Handing out false warrants will result \
+in impeachment. Type \`I'm sure\` if you are sure you want to grant this warrant.`
+    );
 
     if (!verified) {
       return;
@@ -62,7 +65,8 @@ result in impeachment. Type `I\'m sure` if you are sure you want to grant this w
       judge_id: msg.author.id
     });
     await discord.create_msg(
-      msg.channel, `A warrant has been issued against ${args.member.mention}.`
+      msg.channel,
+      `**${discord.tag(msg.author)}**, A warrant has been issued against ${args.member.mention}.`
     );
   }
 }();

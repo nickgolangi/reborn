@@ -16,7 +16,9 @@
 const catch_discord = require('../utilities/catch_discord.js');
 const client = require('../services/client.js');
 const { CommandError, Context } = require('patron.js');
-const { config: { prefix }, constants: { discord_err_codes } } = require('../services/data.js');
+const {
+  config: { prefix }, constants: { discord_err_codes, error_color }
+} = require('../services/data.js');
 const discord = require('../utilities/discord.js');
 const handler = require('../services/handler.js');
 const log = require('../utilities/logger.js');
@@ -89,7 +91,7 @@ ${result.context === Context.Guild ? 'DMs' : 'a server'}.`;
 
     break;
   }
-  await discord.create_msg(msg.channel, reply);
+  await discord.create_msg(msg.channel, reply, error_color);
 }
 
 client.on('messageCreate', catch_discord(async msg => {

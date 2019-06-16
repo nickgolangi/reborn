@@ -41,6 +41,9 @@ module.exports = new class SetOfficerRole extends Command {
       guild_id: msg.channel.guild.id,
       officer_role: args.role.id
     });
-    await discord.create_msg(msg.channel, `I have set the Officer role to ${args.role.mention}.`);
+    await discord.create_msg(
+      msg.channel,
+      `**${discord.tag(msg.author)}**, I have set the Officer role to ${args.role.mention}.`
+    );
   }
 }();

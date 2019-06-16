@@ -49,7 +49,7 @@ module.exports = new class Arrest extends Command {
 
   async run(msg, args) {
     if (args.warrant.defendant_id !== args.member.id) {
-      return CommandResult.fromError(`This warrant isn't issued for ${args.member.mention}`);
+      return CommandResult.fromError(`This warrant isn't issued for ${args.member.mention}.`);
     }
 
     const {
@@ -63,8 +63,9 @@ module.exports = new class Arrest extends Command {
       return;
     }
 
-    const verified = await discord.verify_msg(msg, '**Warning:** Handing out false arrests will \
-result in impeachment. Type `I\'m sure` if you are sure you want to arrest.');
+    const prefix = `**${discord.tag(msg.author)}**, `;
+    const verified = await discord.verify_msg(msg, `${prefix}**Warning:** Handing out false \
+arrests will result in impeachment. Type \`I'm sure\` if you are sure you want to arrest.`);
 
     if (!verified) {
       return;
@@ -90,7 +91,7 @@ result in impeachment. Type `I\'m sure` if you are sure you want to arrest.');
       judge, officer,
       warrant: args.warrant, jailed: trial_role, category: court_category
     });
-    await discord.create_msg(msg.channel, `I have arrested ${args.member.mention}.`);
+    await discord.create_msg(msg.channel, `${prefix}I have arrested ${args.member.mention}.`);
   }
 
   async setUp({ guild, defendant, judge, officer, warrant, jailed, category }) {
