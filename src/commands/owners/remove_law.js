@@ -17,60 +17,32 @@ const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 
-module.exports = new class GrantWarrantForArrest extends Command {
+module.exports = new class RemoveLaw extends Command {
   constructor() {
     super({
-      preconditions: ['judges'],
       args: [
         new Argument({
-          example: 'John',
-          key: 'member',
-          name: 'member',
-          type: 'member'
-        }),
-        new Argument({
-          example: 'Murder',
+          example: 'Rule 1',
           key: 'law',
           name: 'law',
           type: 'law',
           remainder: true
         })
       ],
-      description: 'Grants a warrant to arrest a citizen.',
-      groupName: 'courts',
-      names: ['grant_warrant_for_arrest']
+      description: 'Removes a law.',
+      groupName: 'owners',
+      names: ['remove_law', 'delete_law']
     });
   }
 
   async run(msg, args) {
     if (args.law.active === 0) {
-      return CommandResult.fromError('This law is no longer active.');
+      return CommandResult.fromError('This law was already removed.');
     }
 
-    const { warrant_channel } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
-
-    if (!warrant_channel) {
-      return;
-    }
-
-    const verified = await discord.verify_msg(
-      msg, `**${discord.tag(msg.author)}**, **Warning:** Handing out false warrants will result \
-in impeachment. Type \`I'm sure\` if you are sure you want to grant this warrant.`
-    );
-
-    if (!verified) {
-      return;
-    }
-
-    db.insert('warrants', {
-      guild_id: msg.channel.guild.id,
-      law_id: args.law.id,
-      defendant_id: args.member.id,
-      judge_id: msg.author.id
-    });
+    db.close_law(args.law.id);
     await discord.create_msg(
-      msg.channel,
-      `**${discord.tag(msg.author)}**, A warrant has been issued against ${args.member.mention}.`
+      msg.channel, `**${discord.tag(msg.author)}**, I have removed law ${args.law.name}.`
     );
   }
 }();

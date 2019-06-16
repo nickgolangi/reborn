@@ -51,14 +51,14 @@ module.exports = new class Warrants extends Command {
 
       if (!warrants) {
         return CommandResult.fromError('This warrant does not exist.');
-      } else if (warrants.executed) {
+      } else if (warrants.executed === 1) {
         return CommandResult.fromError('This warrant has already been served.');
       }
 
       warrants = [warrants];
     }
 
-    await this.sendWarrants(msg, warrants);
+    await this.sendWarrants(msg, warrants.filter(x => x.executed === 0));
   }
 
   async sendWarrants(msg, warrants) {

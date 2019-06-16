@@ -53,8 +53,6 @@ module.exports = {
       keys.join(', '),
       keys.map(() => '?').join(', ')
     )).run(...Object.values(columns));
-
-    return this.db.prepare(str.format(queries.select, table)).get(columns.guild_id);
   },
 
   fetch(table, columns) {
@@ -128,6 +126,10 @@ module.exports = {
     return queries.close_warrant.run(id);
   },
 
+  close_law(id) {
+    return queries.close_law.run(id);
+  },
+
   get_channel_case(channel_id) {
     return queries.select_channel_case.get(channel_id);
   },
@@ -142,6 +144,10 @@ module.exports = {
 
   get_verdict(case_id) {
     return queries.select_verdict.get(case_id);
+  },
+
+  get_warrant(id) {
+    return queries.select_warrant.get(id);
   },
 
   fetch_cases(id) {

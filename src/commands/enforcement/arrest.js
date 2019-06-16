@@ -13,7 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-const { Argument, Command, MultiMutex } = require('patron.js');
+const { Argument, Command, CommandResult, MultiMutex } = require('patron.js');
 const catch_discord = require('../../utilities/catch_discord.js');
 const client = require('../../services/client.js');
 const db = require('../../services/database.js');
@@ -56,26 +56,15 @@ module.exports = new class Arrest extends Command {
   }
 
   async run(msg, args) {
-    this.mutex.sync(`${msg.channel.guild.id}-${args.warrant.id}`, async () => {
+    return this.mutex.sync(`${msg.channel.guild.id}-${args.warrant.id}`, async () => {
+      if (args.warrant.executed === 1) {
+        return CommandResult.fromError('This warrant was already served.');
+      }
+
       const {
-        court_category, judge_role, officer_role, trial_role
-      } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
-      const o_role = msg.channel.guild.roles.get(officer_role);
-      const category = msg.channel.guild.channels.get(court_category);
-      const n_warrant = db.fetch_warrants(msg.channel.guild.id).find(x => x.id === args.warrant.id);
-
-      if (!officer_role || !o_role || !discord.usable_role(msg.channel.guild, o_role)
-        || !court_category || !category || !trial_role || n_warrant.executed) {
-        return;
-      }
-
+        court_category, judge_role, trial_role
+      } = await this.prerequisites(msg, args.warrant);
       const prefix = `**${discord.tag(msg.author)}**, `;
-      const verified = await discord.verify_msg(msg, `${arrest_message}`, null, 'yes');
-
-      if (!verified) {
-        return;
-      }
-
       const detainment = db.fetch('detainments', {
         guild_id: msg.channel.guild.id, officer_id: msg.author.id,
         defendant_id: args.warrant.defendant_id, served: 0
@@ -101,6 +90,30 @@ module.exports = new class Arrest extends Command {
       });
       await discord.create_msg(msg.channel, `${prefix}I have arrested ${defendant.mention}.`);
     });
+  }
+
+  async prerequisites(msg, warrant) {
+    const {
+      court_category, judge_role, officer_role, trial_role
+    } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
+    const o_role = msg.channel.guild.roles.get(officer_role);
+    const category = msg.channel.guild.channels.get(court_category);
+    const n_warrant = db.get_warrant(warrant.id);
+
+    if (!officer_role || !o_role || !discord.usable_role(msg.channel.guild, o_role)
+      || !court_category || !category || !trial_role || n_warrant.executed === 1) {
+      return;
+    }
+
+    const verified = await discord.verify_msg(msg, `${arrest_message}`, null, 'yes');
+
+    if (!verified) {
+      return false;
+    }
+
+    return {
+      court_category, judge_role, trial_role
+    };
   }
 
   async setUp({ guild, defendant, judge, officer, warrant, jailed, category }) {
