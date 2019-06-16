@@ -76,6 +76,8 @@ guilds_table: |-
     warrant_channel TEXT
   )
 
+exists: SELECT EXISTS(SELECT 1 FROM {0} WHERE {1} = {2} LIMIT 1)
+
 select: SELECT * FROM {0} WHERE guild_id = ?
 
 insert: INSERT INTO {0}({1}) VALUES({2}) ON CONFLICT DO NOTHING

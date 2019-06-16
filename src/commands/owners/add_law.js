@@ -55,6 +55,12 @@ module.exports = new class AddLaw extends Command {
   }
 
   async run(msg, args) {
+    const exists = db.exists('guilds', 'guild_id', msg.channel.guild.id);
+
+    if (!exists) {
+      db.fetch('guilds', { guild_id: msg.channel.guild.id });
+    }
+
     db.insert('laws', {
       guild_id: msg.channel.guild.id,
       name: args.name,

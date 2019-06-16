@@ -95,6 +95,15 @@ module.exports = {
     )).run(...Object.values(changed));
   },
 
+  exists(table, column, value) {
+    return Object.values(this.db.prepare(str.format(
+      queries.exists,
+      table,
+      column,
+      value
+    )).get())[0] !== 0;
+  },
+
   fetch_pending_detainments() {
     return this.db.prepare(str.format(
       queries.select_pending_detainments,
