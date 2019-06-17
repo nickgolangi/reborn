@@ -24,7 +24,9 @@ module.exports = new class Law extends TypeReader {
 
   async read(cmd, msg, arg, args, val) {
     const name = val.toLowerCase();
-    const laws = db.fetch_laws(msg.channel.guild.id);
+    const laws = db
+      .fetch_laws(msg.channel.guild.id)
+      .filter(x => x.active === 1);
 
     return handle_matches(
       cmd,
