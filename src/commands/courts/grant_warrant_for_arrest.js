@@ -59,7 +59,8 @@ in impeachment. Type \`I'm sure\` if you are sure you want to grant this warrant
     );
 
     if (!verified) {
-      return;
+      return discord.create_msg(msg, `**${discord.tag(msg.author)}**, \
+The command has been cancelled.`);
     }
 
     db.insert('warrants', {
