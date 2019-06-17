@@ -64,12 +64,6 @@ module.exports = new class Guilty extends Command {
 
     const law = db.get_law(law_id);
     const max = number.msToTime(law.max_mute_len);
-
-    if (args.sentence !== -1 && args.sentence > law.max_mute_len) {
-      return discord.create_msg(msg.channel, `${prefix}, The max mute length for \
-this law is ${max.hours} hours.`);
-    }
-
     const timeElapsed = Date.now() - created_at;
     const currrent_verdict = db.get_verdict(case_id);
     const finished = currrent_verdict && (currrent_verdict.verdict === verdict.guilty
@@ -80,6 +74,8 @@ this law is ${max.hours} hours.`);
 after the case has started.');
     } else if (finished) {
       return CommandResult.fromError('This case has already reached a verdict.');
+    } else if (args.sentence !== -1 && args.sentence > law.max_mute_len) {
+      return CommandResult.fromError(`The max mute length for this law is ${max.hours} hours.`);
     }
 
     const verified = await discord.verify_msg(

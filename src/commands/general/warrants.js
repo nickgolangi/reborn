@@ -66,7 +66,8 @@ module.exports = new class Warrants extends Command {
     let content = '';
 
     for (let i = 0; i < warrants.length; i++) {
-      const { id, defendant_id, judge_id } = warrants[i];
+      const { id, defendant_id, judge_id, law_id } = warrants[i];
+      const law = db.get_law(law_id);
       let defendant = msg.channel.guild.members.get(defendant_id);
       let judge = msg.channel.guild.members.get(judge_id);
 
@@ -79,7 +80,7 @@ module.exports = new class Warrants extends Command {
       }
 
       const message = `**${id}**. Issued against **${discord.tag(defendant.user)}** \
-by **${discord.tag(judge)}**.\n`;
+by **${discord.tag(judge)}** under the law: ${law.name}.\n`;
 
       if ((content + message).length >= max_msg_len) {
         await discord.create_msg(msg.channel, {
