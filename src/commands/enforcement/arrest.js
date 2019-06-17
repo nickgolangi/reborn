@@ -61,9 +61,13 @@ module.exports = new class Arrest extends Command {
         return CommandResult.fromError('This warrant was already served.');
       }
 
-      const {
-        court_category, judge_role, trial_role
-      } = await this.prerequisites(msg, args.warrant);
+      const res = await this.prerequisites(msg, args.warrant);
+
+      if (!res) {
+        return;
+      }
+
+      const { court_category, judge_role, trial_role } = res;
       const prefix = `**${discord.tag(msg.author)}**, `;
       const detainment = db.fetch('detainments', {
         guild_id: msg.channel.guild.id, officer_id: msg.author.id,

@@ -40,7 +40,7 @@ module.exports = new class Guilty extends Command {
           example: '5h',
           key: 'sentence',
           name: 'sentence',
-          type: 'time'
+          type: 'time_span'
         })
       ],
       description: 'Declares a guilty verdict in court.',
@@ -54,9 +54,20 @@ module.exports = new class Guilty extends Command {
       channel_id, created_at, defendant_id, law_id, id: case_id
     } = db.get_channel_case(msg.channel.id);
     const defendant = msg.channel.guild.members.get(defendant_id);
+    const prefix = `**${discord.tag(msg.author)}**, `;
 
-    if (!channel_id || !defendant) {
-      return;
+    if (!channel_id) {
+      return discord.create_msg(msg.channel, `${prefix}This channel has no dedicated court case.`);
+    } else if (!defendant) {
+      return discord.create_msg(msg.channel, `${prefix}The defendant is no longer in the server.`);
+    }
+
+    const law = db.get_law(law_id);
+    const max = number.msToTime(law.max_mute_len);
+
+    if (args.sentence !== -1 && args.sentence > law.max_mute_len) {
+      return discord.create_msg(msg.channel, `${prefix}, The max mute length for \
+this law is ${max.hours} hours.`);
     }
 
     const timeElapsed = Date.now() - created_at;
@@ -71,7 +82,6 @@ after the case has started.');
       return CommandResult.fromError('This case has already reached a verdict.');
     }
 
-    const prefix = `**${discord.tag(msg.author)}**, `;
     const verified = await discord.verify_msg(
       msg,
       `${prefix}**Warning:** Are you sure you want to deliver this verdict? Unjust verdicts will \
@@ -79,17 +89,21 @@ result in an impeachment. Type \`I'm sure\` if this is your final verdict.`
     );
 
     if (!verified) {
-      return discord.create_msg(msg, `**${discord.tag(msg.author)}**, \
-The command has been cancelled.`);
+      return discord.create_msg(msg, `${prefix}The command has been cancelled.`);
     }
 
-    const { hours } = number.msToTime(args.sentence);
-    const law = db.get_law(law_id);
+    await this.end(msg, {
+      law, sentence: args.sentence, opinion: args.opinion, defendant, case_id, prefix
+    });
+  }
+
+  async end(msg, { law, sentence, defendant, opinion, case_id, prefix }) {
+    const { hours } = number.msToTime(sentence);
     const repeated = await this.shouldMute({
       ids: {
-        guild: msg.channel.guild.id, case: case_id, defendant: defendant_id
+        guild: msg.channel.guild.id, case: case_id, defendant: defendant.id
       },
-      opinion: args.opinion, sentence: args.sentence, law
+      opinion, sentence, law
     });
     const ending = `${law.mandatory_felony || (!law.mandatory_felony && repeated) ? `sentenced to \
 ${hours} hours in prison${repeated ? ` for repeatedly breaking the law \`${law.name}\`` : ''}` : '\
