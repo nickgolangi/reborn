@@ -65,7 +65,7 @@ module.exports = new class Laws extends Command {
 
     for (let i = 0; i < laws.length; i++) {
       const { name, content, mandatory_felony } = laws[i];
-      const message = `**${name}**: ${content}${mandatory_felony ? ' (felony)' : ''}.\n`;
+      const message = `**${name}**: ${content}${mandatory_felony ? ' (felony)' : ''}\n`;
 
       if ((content + message).length >= max_msg_len) {
         await discord.create_msg(msg.channel, {
