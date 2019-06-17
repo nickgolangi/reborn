@@ -16,6 +16,7 @@
 const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
+const number = require('../../utilities/number.js');
 const empty_argument = Symbol('Empty Argument');
 const max_msg_len = 1900;
 
@@ -79,8 +80,10 @@ module.exports = new class Warrants extends Command {
         judge = await msg._client.getRESTUser(judge_id);
       }
 
+      const { hours } = number.msToTime(law.max_mute_len);
       const message = `**${id}**. Issued against **${discord.tag(defendant.user)}** \
-by **${discord.tag(judge)}** under the law: ${law.name}.\n`;
+by **${discord.tag(judge)}** for violating the law: ${law.name} \
+(${law.max_mute_len === -1 ? '' : `${hours} hours`}).\n`;
 
       if ((content + message).length >= max_msg_len) {
         await discord.create_msg(msg.channel, {
