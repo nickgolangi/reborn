@@ -13,7 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-const { Argument, Command } = require('patron.js');
+const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 
@@ -59,6 +59,14 @@ module.exports = new class AddLaw extends Command {
 
     if (!exists) {
       db.fetch('guilds', { guild_id: msg.channel.guild.id });
+    }
+
+    const existingLaw = db
+      .fetch_laws(msg.channel.guild.id)
+      .some(x => x.name.toLowerCase() === args.name.toLowerCase() && x.active === 1);
+
+    if (existingLaw) {
+      return CommandResult.fromError('An active law by this name already exists.');
     }
 
     db.insert('laws', {
