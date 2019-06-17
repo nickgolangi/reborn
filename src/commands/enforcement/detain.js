@@ -45,7 +45,8 @@ module.exports = new class Detain extends Command {
 detainments will result in impeachment. Type \`I'm sure\` if you are sure you want to detain.`);
 
     if (!verified) {
-      return;
+      return discord.create_msg(msg, `**${discord.tag(msg.author)}**, \
+The command has been cancelled.`);
     }
 
     const { jailed_role } = db.fetch('guilds', { guild_id: msg.channel.guild.id });

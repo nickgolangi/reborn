@@ -108,6 +108,9 @@ module.exports = new class Arrest extends Command {
     const verified = await discord.verify_msg(msg, `${arrest_message}`, null, 'yes');
 
     if (!verified) {
+      await discord.create_msg(msg, `**${discord.tag(msg.author)}**, \
+The command has been cancelled.`);
+
       return false;
     }
 
