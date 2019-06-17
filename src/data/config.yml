@@ -23,3 +23,5 @@ time_units: {
   d: 864e5,
   w: 6048e5
 }
+
+restart: git pull && pm2 restart 0
