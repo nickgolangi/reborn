@@ -65,8 +65,7 @@ result in an impeachment. Type \`I'm sure\` if this is your final verdict.`
     );
 
     if (!verified) {
-      return discord.create_msg(msg, `**${discord.tag(msg.author)}**, \
-The command has been cancelled.`);
+      return CommandResult.fromError('The command has been cancelled.');
     }
 
     await this.free(msg.channel.guild, defendant);

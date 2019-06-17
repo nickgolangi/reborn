@@ -54,12 +54,11 @@ module.exports = new class Guilty extends Command {
       channel_id, created_at, defendant_id, law_id, id: case_id
     } = db.get_channel_case(msg.channel.id);
     const defendant = msg.channel.guild.members.get(defendant_id);
-    const prefix = `**${discord.tag(msg.author)}**, `;
 
     if (!channel_id) {
-      return discord.create_msg(msg.channel, `${prefix}This channel has no dedicated court case.`);
+      return CommandResult.fromError('This channel has no ongoing court case.');
     } else if (!defendant) {
-      return discord.create_msg(msg.channel, `${prefix}The defendant is no longer in the server.`);
+      return CommandResult.fromError('The defendant is no longer in the server.');
     }
 
     const law = db.get_law(law_id);
@@ -69,15 +68,16 @@ module.exports = new class Guilty extends Command {
     const finished = currrent_verdict && (currrent_verdict.verdict === verdict.guilty
       || currrent_verdict.verdict === verdict.innocent);
 
-    if (timeElapsed < half_hour) {
+    if (finished) {
+      return CommandResult.fromError('This case has already reached a verdict.');
+    } else if (timeElapsed < half_hour) {
       return CommandResult.fromError('A verdict can only be delivered 30 minutes \
 after the case has started.');
-    } else if (finished) {
-      return CommandResult.fromError('This case has already reached a verdict.');
     } else if (args.sentence !== -1 && args.sentence > law.max_mute_len) {
       return CommandResult.fromError(`The max mute length for this law is ${max.hours} hours.`);
     }
 
+    const prefix = `**${discord.tag(msg.author)}**, `;
     const verified = await discord.verify_msg(
       msg,
       `${prefix}**Warning:** Are you sure you want to deliver this verdict? Unjust verdicts will \
@@ -85,7 +85,7 @@ result in an impeachment. Type \`I'm sure\` if this is your final verdict.`
     );
 
     if (!verified) {
-      return discord.create_msg(msg, `${prefix}The command has been cancelled.`);
+      return CommandResult.fromError('The command has been cancelled.');
     }
 
     await this.end(msg, {
