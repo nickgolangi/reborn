@@ -55,7 +55,7 @@ module.exports = {
     )).run(...Object.values(columns));
   },
 
-  fetch(table, columns) {
+  fetch(table, columns, insert = true) {
     const query = this.db.prepare(str.format(queries.select, table));
     const res = query.get(columns.guild_id);
 
@@ -63,9 +63,11 @@ module.exports = {
       return res;
     }
 
-    this.insert(table, columns);
+    if (insert) {
+      this.insert(table, columns);
 
-    return query.get(columns.guild_id);
+      return query.get(columns.guild_id);
+    }
   },
 
   update(table, changed) {

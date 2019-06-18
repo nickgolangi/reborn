@@ -22,7 +22,7 @@ client.on('guildMemberRemove', (guild, member) => {
     defendant_id: member.id,
     fled: 0,
     served: 0
-  });
+  }, false);
 
   if (detainment) {
     db.fled_detainment(detainment.id);
