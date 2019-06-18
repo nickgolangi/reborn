@@ -89,7 +89,7 @@ by **${discord.tag(judge)}** for violating the law: ${law.name} \
 
       if ((content + message).length >= max_msg_len) {
         await discord.create_msg(msg.channel, {
-          title: 'Warrants in this server',
+          title: `${warrants.length} Warrants in this server`,
           description: content
         });
         content = '';
@@ -100,7 +100,7 @@ by **${discord.tag(judge)}** for violating the law: ${law.name} \
 
     if (content) {
       await discord.create_msg(msg.channel, {
-        title: 'Warrants in this server',
+        title: `${warrants.length} Warrants in this server`,
         description: content
       });
     }
