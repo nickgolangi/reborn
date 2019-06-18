@@ -20,6 +20,7 @@ const discord = require('../../utilities/discord.js');
 const number = require('../../utilities/number.js');
 const empty_argument = Symbol('Empty Argument');
 const max_msg_len = 1900;
+const day_hours = 24;
 
 module.exports = new class Warrants extends Command {
   constructor() {
@@ -85,7 +86,7 @@ module.exports = new class Warrants extends Command {
       const expires = created_at + config.auto_close_warrant - Date.now();
       const message = `**${id}**. Issued against **${discord.tag(defendant.user)}** \
 by **${discord.tag(judge)}** for violating the law: ${law.name} \
-(${law.max_mute_len <= 0 ? '' : `${hours} hours. `}Expires in ${this.format_time(expires)}).\n`;
+(${hours <= 0 ? '' : `${hours} hours. `}Expires in ${this.format_time(expires)}).\n`;
 
       if ((content + message).length >= max_msg_len) {
         await discord.create_msg(msg.channel, {
@@ -107,24 +108,12 @@ by **${discord.tag(judge)}** for violating the law: ${law.name} \
   }
 
   format_time(expires) {
-    let time_format = '';
+    const { days, hours } = number.msToTime(expires);
 
-    if (expires > 0) {
-      const { hours, minutes, seconds } = number.msToTime(expires);
-
-      if (hours) {
-        time_format += `${hours} hours, `;
-      }
-
-      if (minutes) {
-        time_format += `${minutes} minutes, `;
-      }
-
-      time_format += `${time_format ? 'and ' : ''}${seconds} seconds`;
-    } else {
-      time_format = 'Expiring Soon';
+    if (expires <= 0 || !hours) {
+      return 'Expiring Soon';
     }
 
-    return time_format;
+    return `${(day_hours * days) + hours} hours`;
   }
 }();
