@@ -10,6 +10,12 @@ logs_dir: "logs/"
 # Time detain lasts for in ms.
 detain_time: 3e5
 
+# Auto close warrant interval in ms.
+auto_close_warrant_interval: 6e4
+
+# When the warrant closes after its been issued
+auto_close_warrant: 1728e5
+
 # Time cases last for in ms.
 max_case_time: 864e5
 

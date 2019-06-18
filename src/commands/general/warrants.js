@@ -15,6 +15,7 @@
 'use strict';
 const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
+const { config } = require('../services/data.js');
 const discord = require('../../utilities/discord.js');
 const number = require('../../utilities/number.js');
 const empty_argument = Symbol('Empty Argument');
@@ -67,7 +68,7 @@ module.exports = new class Warrants extends Command {
     let content = '';
 
     for (let i = 0; i < warrants.length; i++) {
-      const { id, defendant_id, judge_id, law_id } = warrants[i];
+      const { id, defendant_id, judge_id, law_id, created_at } = warrants[i];
       const law = db.get_law(law_id);
       let defendant = msg.channel.guild.members.get(defendant_id);
       let judge = msg.channel.guild.members.get(judge_id);
@@ -81,9 +82,10 @@ module.exports = new class Warrants extends Command {
       }
 
       const { hours } = number.msToTime(law.max_mute_len);
+      const expires = created_at + config.auto_close_warrant - Date.now();
       const message = `**${id}**. Issued against **${discord.tag(defendant.user)}** \
 by **${discord.tag(judge)}** for violating the law: ${law.name} \
-(${law.max_mute_len <= 0 ? '' : `${hours} hours`}).\n`;
+(${law.max_mute_len <= 0 ? '' : `${hours} hours. `}Expires in ${this.format_time(expires)}).\n`;
 
       if ((content + message).length >= max_msg_len) {
         await discord.create_msg(msg.channel, {
@@ -102,5 +104,27 @@ by **${discord.tag(judge)}** for violating the law: ${law.name} \
         description: content
       });
     }
+  }
+
+  format_time(expires) {
+    let time_format = '';
+
+    if (expires > 0) {
+      const { hours, minutes, seconds } = number.msToTime(expires);
+
+      if (hours) {
+        time_format += `${hours} hours, `;
+      }
+
+      if (minutes) {
+        time_format += `${minutes} minutes, `;
+      }
+
+      time_format += `${time_format ? 'and ' : ''}${seconds} seconds`;
+    } else {
+      time_format = 'Expiring Soon';
+    }
+
+    return time_format;
   }
 }();
