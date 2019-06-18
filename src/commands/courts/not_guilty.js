@@ -57,17 +57,6 @@ module.exports = new class NotGuilty extends Command {
       return CommandResult.fromError('This case has already reached a verdict.');
     }
 
-    const prefix = `**${discord.tag(msg.author)}**, `;
-    const verified = await discord.verify_msg(
-      msg,
-      `${prefix}**Warning:** Are you sure you want to deliver this verdict? Unjust verdicts will \
-result in an impeachment. Type \`I'm sure\` if this is your final verdict.`
-    );
-
-    if (!verified) {
-      return CommandResult.fromError('The command has been cancelled.');
-    }
-
     await this.free(msg.channel.guild, defendant);
 
     const update = {
@@ -79,6 +68,9 @@ result in an impeachment. Type \`I'm sure\` if this is your final verdict.`
     };
 
     db.insert('verdicts', update);
+
+    const prefix = `**${discord.tag(msg.author)}**, `;
+
     await discord.create_msg(
       msg.channel, `${prefix} The court has found ${defendant.mention} not guilty.`
     );
