@@ -83,7 +83,7 @@ module.exports = new class Warrants extends Command {
       const { hours } = number.msToTime(law.max_mute_len);
       const message = `**${id}**. Issued against **${discord.tag(defendant.user)}** \
 by **${discord.tag(judge)}** for violating the law: ${law.name} \
-(${law.max_mute_len === -1 ? '' : `${hours} hours`}).\n`;
+(${law.max_mute_len <= 0 ? '' : `${hours} hours`}).\n`;
 
       if ((content + message).length >= max_msg_len) {
         await discord.create_msg(msg.channel, {

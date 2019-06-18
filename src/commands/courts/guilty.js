@@ -73,7 +73,7 @@ module.exports = new class Guilty extends Command {
     } else if (timeElapsed < half_hour) {
       return CommandResult.fromError('A verdict can only be delivered 30 minutes \
 after the case has started.');
-    } else if (args.sentence !== -1 && args.sentence > law.max_mute_len) {
+    } else if (args.sentence > 0 && args.sentence > law.max_mute_len) {
       return CommandResult.fromError(`The max mute length for this law is ${max.hours} hours.`);
     }
 
