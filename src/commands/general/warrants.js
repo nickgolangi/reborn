@@ -15,7 +15,7 @@
 'use strict';
 const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
-const { config } = require('../services/data.js');
+const { config } = require('../../services/data.js');
 const discord = require('../../utilities/discord.js');
 const number = require('../../utilities/number.js');
 const empty_argument = Symbol('Empty Argument');
