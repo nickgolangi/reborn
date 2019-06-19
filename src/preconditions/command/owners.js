@@ -21,7 +21,7 @@ module.exports = new class Owners extends Precondition {
   }
 
   async run(cmd, msg) {
-    const notOwner = msg.channel.guild.ownerID !== msg.author.id
+    const notOwner = !msg.member.permission.has('administrator')
       && msg.author.id !== '310859567649128449';
 
     if (msg.channel.guild && notOwner) {
