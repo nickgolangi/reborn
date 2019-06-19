@@ -70,7 +70,7 @@ module.exports = new class AddCommand extends Command {
         );
       }
 
-      update.response = args.response.replace(/@(everyone|here|!?\d{17,19})/g, '@\u200b$1');
+      update.response = args.response.replace(/@(everyone|here|(!|&)?\d{17,19})/g, '@\u200b$1');
     }
 
     if (attachments.length) {
