@@ -101,7 +101,7 @@ members_table: |-
 impeachments_table: |-
   CREATE TABLE IF NOT EXISTS impeachments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    member_id TEXT NOT NULL REFERENCES members(id),
+    member_id TEXT NOT NULL,
     guild_id TEXT NOT NULL REFERENCES guilds(guild_id),
     created_at INTEGER NOT NULL,
     last_modified_at INTEGER NOT NULL
