@@ -40,7 +40,7 @@ module.exports = new class RemoveCommand extends Command {
   async run(msg, args) {
     const cmd = db
       .fetch_commands(msg.channel.guild.id)
-      .find(x => x.name.toLowerCase() === args.name.toLowerCase());
+      .find(x => x.name.toLowerCase() === args.name.toLowerCase() && x.active === 1);
 
     if (cmd.active === 0) {
       return CommandResult.fromError('This command was already removed.');
