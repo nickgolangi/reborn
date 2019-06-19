@@ -110,7 +110,11 @@ client.on('messageCreate', catch_discord(async msg => {
     const custom = custom_cmds.find(x => x.name.toLowerCase() === name);
 
     if (custom) {
-      return msg.channel.createMessage(custom.response, { file: custom.image });
+      if (custom.image) {
+        return msg.channel.createMessage(custom.response, { file: custom.image });
+      }
+
+      return msg.channel.createMessage(custom.response);
     }
   }
 
