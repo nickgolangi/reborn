@@ -11,7 +11,7 @@ logs_dir: "logs/"
 detain_time: 3e5
 
 # Auto close warrant interval in ms.
-auto_close_warrant_interval: 6e4
+auto_close_warrant_interval: 3e5
 
 # When the warrant closes after its been issued
 auto_close_warrant: 1728e5
