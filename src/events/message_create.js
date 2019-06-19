@@ -114,7 +114,7 @@ client.on('messageCreate', catch_discord(async msg => {
 
       if (custom.image) {
         options.file = {
-          file: await discord.resolve_image_link(custom.image), name: `${custom.name}.png`
+          file: await discord.resolve_image_link(custom.image), name: custom.image
         };
       }
 
