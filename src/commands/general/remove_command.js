@@ -48,7 +48,7 @@ module.exports = new class RemoveCommand extends Command {
 
     db.close_command(cmd.id);
     await discord.create_msg(
-      msg.channel, `I've remove the custom command with the name ${args.name}.`
+      msg.channel, `I've removed the custom command with the name ${args.name}.`
     );
   }
 }();
