@@ -20,6 +20,7 @@ const discord = require('../../utilities/discord.js');
 module.exports = new class AddLaw extends Command {
   constructor() {
     super({
+      preconditions: ['guild_db_exists'],
       args: [
         new Argument({
           example: '"Rule 1"',
@@ -55,12 +56,6 @@ module.exports = new class AddLaw extends Command {
   }
 
   async run(msg, args) {
-    const exists = db.exists('guilds', 'guild_id', msg.channel.guild.id);
-
-    if (!exists) {
-      db.fetch('guilds', { guild_id: msg.channel.guild.id });
-    }
-
     const existingLaw = db
       .fetch_laws(msg.channel.guild.id)
       .some(x => x.name.toLowerCase() === args.name.toLowerCase() && x.active === 1);

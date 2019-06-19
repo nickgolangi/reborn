@@ -20,6 +20,7 @@ const discord = require('../../utilities/discord.js');
 module.exports = new class RemoveCommand extends Command {
   constructor() {
     super({
+      preconditions: ['guild_db_exists'],
       args: [
         new Argument({
           example: 'johns genitals',

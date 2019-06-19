@@ -20,7 +20,7 @@ const discord = require('../../utilities/discord.js');
 module.exports = new class AddCommand extends Command {
   constructor() {
     super({
-      preconditions: ['max_custom_cmds'],
+      preconditions: ['guild_db_exists', 'max_custom_cmds'],
       args: [
         new Argument({
           example: '"johns genitals"',
