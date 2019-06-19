@@ -13,11 +13,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-const { ArgumentPrecondition, PreconditionResult } = require('patron.js');
+const { Precondition, PreconditionResult } = require('patron.js');
 const db = require('../../services/database.js');
 const max = 5;
 
-module.exports = new class MaxCustomCmds extends ArgumentPrecondition {
+module.exports = new class MaxCustomCmds extends Precondition {
   constructor() {
     super({ name: 'max_custom_cmds' });
   }
