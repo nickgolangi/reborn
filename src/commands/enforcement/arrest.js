@@ -38,7 +38,7 @@ type \`yes\`.`;
 module.exports = new class Arrest extends Command {
   constructor() {
     super({
-      preconditions: ['can_trial'],
+      preconditions: ['can_trial', 'usable_officer', 'usable_court'],
       args: [
         new Argument({
           example: '845',
@@ -98,22 +98,21 @@ module.exports = new class Arrest extends Command {
 
   async prerequisites(msg, warrant) {
     const {
-      court_category, judge_role, officer_role, trial_role
+      court_category, judge_role, trial_role
     } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
-    const o_role = msg.channel.guild.roles.get(officer_role);
-    const category = msg.channel.guild.channels.get(court_category);
     const n_warrant = db.get_warrant(warrant.id);
+    const prefix = `**${discord.tag(msg.author)}**, `;
 
-    if (!officer_role || !o_role || !discord.usable_role(msg.channel.guild, o_role)
-      || !court_category || !category || !trial_role || n_warrant.executed === 1) {
-      return;
+    if (n_warrant.executed === 1) {
+      await discord.create_msg(msg, `${prefix}This warrant has already been executed.`);
+
+      return false;
     }
 
     const verified = await discord.verify_msg(msg, `${arrest_message}`, null, 'yes');
 
     if (!verified) {
-      await discord.create_msg(msg, `**${discord.tag(msg.author)}**, \
-The command has been cancelled.`);
+      await discord.create_msg(msg, `${prefix}The command has been cancelled.`);
 
       return false;
     }

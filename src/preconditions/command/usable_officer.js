@@ -17,21 +17,23 @@ const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 const { Precondition, PreconditionResult } = require('patron.js');
 
-module.exports = new class CanTrial extends Precondition {
+module.exports = new class UsableOfficer extends Precondition {
   constructor() {
-    super({ name: 'can_trial' });
+    super({ name: 'usable_officer' });
   }
 
   async run(cmd, msg) {
-    const { trial_role } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
-    const role = msg.channel.guild.roles.get(trial_role);
+    const { officer_role } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
+    const role = msg.channel.guild.roles.get(officer_role);
 
-    if (!trial_role || !role) {
-      return PreconditionResult.fromError(cmd, 'The Trial role needs to be set.');
-    } else if (!discord.usable_role(msg.channel.guild, role)) {
+    if (!officer_role) {
+      return PreconditionResult.fromError(cmd, 'The Officer role needs to be set.');
+    } else if (!role) {
       return PreconditionResult.fromError(
-        cmd, 'The Trial role is higher in hierarchy than my role.'
+        cmd, 'The Officer role was deleted and needs to be set again.'
       );
+    } else if (!discord.usable_role(msg.channel.guild, role)) {
+      return PreconditionResult.fromError(cmd, 'The Officer role is higher than me in hierarchy.');
     }
 
     return PreconditionResult.fromSuccess();

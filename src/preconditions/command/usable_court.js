@@ -14,23 +14,22 @@
  */
 'use strict';
 const db = require('../../services/database.js');
-const discord = require('../../utilities/discord.js');
 const { Precondition, PreconditionResult } = require('patron.js');
 
-module.exports = new class CanTrial extends Precondition {
+module.exports = new class UsableCourt extends Precondition {
   constructor() {
-    super({ name: 'can_trial' });
+    super({ name: 'usable_court' });
   }
 
   async run(cmd, msg) {
-    const { trial_role } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
-    const role = msg.channel.guild.roles.get(trial_role);
+    const { court_category } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
+    const channel = msg.channel.guild.channels.get(court_category);
 
-    if (!trial_role || !role) {
-      return PreconditionResult.fromError(cmd, 'The Trial role needs to be set.');
-    } else if (!discord.usable_role(msg.channel.guild, role)) {
+    if (!court_category) {
+      return PreconditionResult.fromError(cmd, 'The Court category channel needs to be set.');
+    } else if (!channel) {
       return PreconditionResult.fromError(
-        cmd, 'The Trial role is higher in hierarchy than my role.'
+        cmd, 'The Court category channel was deleted and needs to be set again.'
       );
     }
 
