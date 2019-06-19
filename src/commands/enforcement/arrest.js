@@ -164,6 +164,12 @@ The defense is accused of violating the following law: ${law.name}.`
 
     if (judge.length > 1) {
       judge.splice(judge.findIndex(mbr => mbr.id === warrant.judge_id), 1);
+
+      const active = judge.filter(x => x.status !== 'offline');
+
+      if (active.length > 1) {
+        judge = active;
+      }
     }
 
     judge = judge[Math.floor(Math.random() * judge.length)];
