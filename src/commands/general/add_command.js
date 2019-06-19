@@ -39,7 +39,7 @@ module.exports = new class AddCommand extends Command {
       ],
       description: 'Adds a custom command.',
       groupName: 'general',
-      names: ['add_command', 'create_command']
+      names: ['add_command', 'create_command', 'add_cmd']
     });
   }
 
