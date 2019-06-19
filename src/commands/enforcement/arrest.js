@@ -23,7 +23,7 @@ const addRole = catch_discord(client.addGuildMemberRole.bind(client));
 const arrest_message = `Executing unlawful warrants will result in \
 impeachment and **national disgrace**.
 
-If you **ANY DOUBTS WHATSOEVER ABOUT THE VALIDITY OF THIS WARRANT**, \
+If you have **ANY DOUBTS WHATSOEVER ABOUT THE VALIDITY OF THIS WARRANT**, \
 do not proceed with this arrest.
 
 __IGNORANCE IS NOT A DEFENSE.__
