@@ -33,7 +33,7 @@ module.exports = new class RemoveCommand extends Command {
       ],
       description: 'Removes a custom command.',
       groupName: 'general',
-      names: ['remove_command', 'delete_command']
+      names: ['remove_command', 'delete_command', 'remove_cmd']
     });
   }
 
