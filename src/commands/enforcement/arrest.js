@@ -135,6 +135,7 @@ ${discord.formatUsername(defendant.username)}`,
     const edits = [judge.id, officer.id, defendant.id, guild.shard.client.user.id];
 
     await Promise.all(edits.map(x => channel.editPermission(x, this.bitfield, 0, 'member')));
+    await channel.edit({ nsfw: true });
 
     const law = db.get_law(warrant.law_id);
 
