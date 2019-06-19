@@ -1,6 +1,7 @@
 # Eris client options. See more at: https://abal.moe/Eris/docs/Client
 client: {
   compress: true,
+  disableEveryone: true,
   defaultImageFormat: "png",
   defaultImageSize: 256,
   disableEvents: {
