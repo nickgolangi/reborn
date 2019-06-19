@@ -76,6 +76,35 @@ guilds_table: |-
     warrant_channel TEXT
   )
 
+commands_table: |-
+  CREATE TABLE IF NOT EXISTS commands (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    guild_id TEXT NOT NULL REFERENCES guilds(guild_id),
+    creator_id TEXT NOT NULL REFERENCES members(id),
+    created_at INTEGER NOT NULL,
+    last_modified_at INTEGER NOT NULL
+    name TEXT NOT NULL,
+    response TEXT NULL,
+    image TEXT
+  )
+
+members_table: |-
+  CREATE TABLE IF NOT EXISTS members (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    guild_id TEXT NOT NULL REFERENCES guilds(guild_id),
+    created_at INTEGER NOT NULL,
+    last_modified_at INTEGER NOT NULL
+  )
+
+impeachments_table: |-
+  CREATE TABLE IF NOT EXISTS impeachments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    member_id TEXT NOT NULL REFERENCES members(id),
+    guild_id TEXT NOT NULL REFERENCES guilds(guild_id),
+    created_at INTEGER NOT NULL,
+    last_modified_at INTEGER NOT NULL
+  )
+
 exists: SELECT EXISTS(SELECT 1 FROM {0} WHERE {1} = {2} LIMIT 1)
 
 select: SELECT * FROM {0} WHERE guild_id = ?
