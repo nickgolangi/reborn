@@ -82,7 +82,7 @@ commands_table: |-
     guild_id TEXT NOT NULL REFERENCES guilds(guild_id),
     creator_id TEXT NOT NULL,
     created_at INTEGER NOT NULL,
-    last_modified_at INTEGER NOT NULL
+    last_modified_at INTEGER NOT NULL,
     name TEXT NOT NULL,
     response TEXT NULL,
     image TEXT,
