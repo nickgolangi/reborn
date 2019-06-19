@@ -17,6 +17,7 @@ const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 const empty_argument = Symbol('Empty Argument');
+const max_len = 500;
 
 module.exports = new class AddCommand extends Command {
   constructor() {
@@ -63,6 +64,12 @@ module.exports = new class AddCommand extends Command {
     };
 
     if (args.response !== empty_argument) {
+      if (args.response.length > max_len) {
+        return CommandResult.fromError(
+          `The maximum length of the response can't be greater than ${max_len} characters.`
+        );
+      }
+
       update.response = args.response.replace(/@(everyone|here|!?\d{17,19})/g, '@\u200b$1');
     }
 
