@@ -19,6 +19,7 @@ const { config, constants } = require('../services/data.js');
 const msg_collector = require('../services/message_collector.js');
 const create_message = catch_discord((...args) => client.createMessage(...args));
 const delete_message = catch_discord(client.deleteMessage.bind(client));
+const fetch = require('node-fetch');
 
 module.exports = {
   embed(options) {
@@ -28,6 +29,10 @@ module.exports = {
     }
 
     return { embed: options };
+  },
+
+  resolve_image_link(link) {
+    return fetch(link).then(x => x.buffer());
   },
 
   create_msg(channel, msg, color, file) {
