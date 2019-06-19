@@ -107,7 +107,7 @@ client.on('messageCreate', catch_discord(async msg => {
   if (!isCommand.success) {
     const custom_cmds = db.fetch_commands(msg.channel.guild.id);
     const name = msg.content.slice(prefix.length).toLowerCase();
-    const custom = custom_cmds.find(x => x.name.toLowerCase() === name);
+    const custom = custom_cmds.find(x => x.name.toLowerCase() === name && x.active === 1);
 
     if (custom) {
       const options = {};
