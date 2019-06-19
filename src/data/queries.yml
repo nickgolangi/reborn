@@ -84,7 +84,7 @@ commands_table: |-
     created_at INTEGER NOT NULL,
     last_modified_at INTEGER NOT NULL,
     name TEXT NOT NULL,
-    response TEXT NULL,
+    response TEXT,
     image TEXT,
     active TINYINT NOT NULL DEFAULT 1
   )

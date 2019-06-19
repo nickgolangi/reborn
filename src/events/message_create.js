@@ -110,13 +110,19 @@ client.on('messageCreate', catch_discord(async msg => {
     const custom = custom_cmds.find(x => x.name.toLowerCase() === name);
 
     if (custom) {
+      const options = {};
+
       if (custom.image) {
-        return msg.channel.createMessage(custom.response, {
+        options.file = {
           file: await discord.resolve_image_link(custom.image), name: `${custom.name}.png`
-        });
+        };
       }
 
-      return msg.channel.createMessage(custom.response);
+      if (custom.response) {
+        options.content = custom.response;
+      }
+
+      return msg.channel.createMessage(options.content, options.file);
     }
   }
 

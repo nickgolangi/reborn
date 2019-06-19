@@ -16,6 +16,7 @@
 const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
+const empty_argument = Symbol('Empty Argument');
 
 module.exports = new class AddCommand extends Command {
   constructor() {
@@ -34,6 +35,7 @@ module.exports = new class AddCommand extends Command {
           key: 'response',
           name: 'response',
           type: 'string',
+          defaultValue: empty_argument,
           remainder: true
         })
       ],
@@ -46,21 +48,26 @@ module.exports = new class AddCommand extends Command {
   async run(msg, args) {
     const cmds = db.fetch_commands(msg.channel.guild.id);
     const lower = args.name.toLowerCase();
+    const { attachments } = msg;
 
     if (cmds.some(x => x.name.toLowerCase() === lower && x.active === 1)) {
       return CommandResult.fromError('A custom command by this name already exists.');
+    } else if (!attachments.length && args.response === empty_argument) {
+      return CommandResult.fromError('A custom command must at least have a response or image.');
     }
 
-    const sanitized = args.response.replace(/@(everyone|here|!?\d{17,19})/g, '@\u200b$1');
     const update = {
       guild_id: msg.channel.guild.id,
       creator_id: msg.author.id,
-      name: args.name,
-      response: sanitized
+      name: args.name
     };
 
-    if (msg.attachments.length) {
-      update.image = msg.attachments[0].proxy_url;
+    if (args.response !== empty_argument) {
+      update.response = args.response.replace(/@(everyone|here|!?\d{17,19})/g, '@\u200b$1');
+    }
+
+    if (attachments.length) {
+      update.image = attachments[0].proxy_url;
     }
 
     db.insert('commands', update);
