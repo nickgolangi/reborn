@@ -138,7 +138,7 @@ close_warrant: UPDATE warrants SET executed = 1 WHERE id = ?
 
 close_law: UPDATE laws SET active = 0 WHERE id = ?
 
-close_cmd: UPDATE cmds SET active = 0 WHERE id = ?
+close_cmd: UPDATE commands SET active = 0 WHERE id = ?
 
 select_channel_case: SELECT * FROM cases WHERE channel_id = ?
 
