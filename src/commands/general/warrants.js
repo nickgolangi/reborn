@@ -85,7 +85,7 @@ module.exports = new class Warrants extends Command {
       const expires = created_at + config.auto_close_warrant - Date.now();
       const message = `**${id}**. Issued against **${discord.tag(defendant.user)}** \
 by **${discord.tag(judge)}** for violating the law: ${law.name} \
-(expires in ${this.format_time(expires)}).\n`;
+(${this.format_time(expires)}).\n`;
 
       if ((content + message).length >= max_msg_len) {
         await discord.create_msg(msg.channel, {
@@ -110,9 +110,9 @@ by **${discord.tag(judge)}** for violating the law: ${law.name} \
     const { days, hours } = number.msToTime(expires);
 
     if (expires <= 0 || !hours) {
-      return 'Expiring Soon';
+      return 'expiring Soon';
     }
 
-    return `${(day_hours * days) + hours} hours`;
+    return `expires in ${(day_hours * days) + hours} hours`;
   }
 }();
