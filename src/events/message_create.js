@@ -22,6 +22,7 @@ const {
 const discord = require('../utilities/discord.js');
 const handler = require('../services/handler.js');
 const log = require('../utilities/logger.js');
+const db = require('../services/database.js');
 const msg_collector = require('../services/message_collector.js');
 
 function handle_err(result) {
@@ -99,6 +100,18 @@ client.on('messageCreate', catch_discord(async msg => {
 
   if (msg.embeds.length || !msg.author || msg.author.bot || !msg.content.startsWith(prefix)) {
     return;
+  }
+
+  const isCommand = await handler.parseCommand(msg, prefix.length);
+
+  if (!isCommand.success) {
+    const custom_cmds = db.fetch_commands(msg.channel.guild.id);
+    const name = msg.content.slice(prefix.length).toLowerCase();
+    const custom = custom_cmds.find(x => x.name.toLowerCase() === name);
+
+    if (custom) {
+      return msg.channel.createMessage(custom.response, { file: custom.image });
+    }
   }
 
   const result = await handler.run(msg, prefix.length);

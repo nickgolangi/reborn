@@ -141,6 +141,10 @@ module.exports = {
     return queries.close_law.run(id);
   },
 
+  close_command(id) {
+    return queries.close_cmd.run(id);
+  },
+
   get_channel_case(channel_id) {
     return queries.select_channel_case.get(channel_id);
   },
@@ -175,5 +179,9 @@ module.exports = {
 
   fetch_verdicts(guild_id, defendant_id) {
     return queries.select_verdicts.all(guild_id, defendant_id);
+  },
+
+  fetch_commands(guild_id) {
+    return queries.select_commands.all(guild_id);
   }
 };

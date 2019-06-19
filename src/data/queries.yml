@@ -80,18 +80,20 @@ commands_table: |-
   CREATE TABLE IF NOT EXISTS commands (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     guild_id TEXT NOT NULL REFERENCES guilds(guild_id),
-    creator_id TEXT NOT NULL REFERENCES members(id),
+    creator_id TEXT NOT NULL,
     created_at INTEGER NOT NULL,
     last_modified_at INTEGER NOT NULL
     name TEXT NOT NULL,
     response TEXT NULL,
-    image TEXT
+    image TEXT,
+    active TINYINT NOT NULL DEFAULT 1
   )
 
 members_table: |-
   CREATE TABLE IF NOT EXISTS members (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     guild_id TEXT NOT NULL REFERENCES guilds(guild_id),
+    member_id TEXT NOT NULL,
     created_at INTEGER NOT NULL,
     last_modified_at INTEGER NOT NULL
   )
@@ -136,6 +138,8 @@ close_warrant: UPDATE warrants SET executed = 1 WHERE id = ?
 
 close_law: UPDATE laws SET active = 0 WHERE id = ?
 
+close_cmd: UPDATE cmds SET active = 0 WHERE id = ?
+
 select_channel_case: SELECT * FROM cases WHERE channel_id = ?
 
 select_cases: SELECT * FROM cases WHERE guild_id = ?
@@ -153,3 +157,5 @@ select_warrant: SELECT * FROM warrants WHERE id = ?
 select_verdicts: SELECT * FROM verdicts WHERE guild_id = ? AND defendant_id = ?
 
 select_verdict: SELECT * FROM verdicts WHERE case_id = ?
+
+select_commands: SELECT * FROM commands WHERE guild_id = ?
