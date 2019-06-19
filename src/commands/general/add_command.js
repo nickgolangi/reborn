@@ -79,7 +79,8 @@ module.exports = new class AddCommand extends Command {
 
     db.insert('commands', update);
     await discord.create_msg(
-      msg.channel, `I've created a custom command with the name ${args.name}.`
+      msg.channel,
+      `**${discord.tag(msg.author)}**, I've created a custom command with the name ${args.name}.`
     );
   }
 }();

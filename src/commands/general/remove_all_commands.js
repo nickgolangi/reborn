@@ -39,6 +39,9 @@ module.exports = new class RemoveAllCommands extends Command {
       db.close_command(cmds[i].id);
     }
 
-    await discord.create_msg(msg.channel, 'I\'ve removed all of your custom commands');
+    await discord.create_msg(
+      msg.channel,
+      `**${discord.tag(msg.author)}**, I've removed all of your custom commands`
+    );
   }
 }();
