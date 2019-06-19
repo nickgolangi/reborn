@@ -107,6 +107,18 @@ impeachments_table: |-
     last_modified_at INTEGER NOT NULL
   )
 
+evidence_table: |-
+  CREATE TABLE IF NOT EXISTS evidence (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    officer_id TEXT NOT NULL,
+    guild_id TEXT NOT NULL REFERENCES guilds(guild_id),
+    defendant_id TEXT NOT NULL,
+    evidence TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    last_modified_at INTEGER NOT NULL,
+    active TINYINT NOT NULL DEFAULT 1
+  )
+
 exists: SELECT EXISTS(SELECT 1 FROM {0} WHERE {1} = {2} LIMIT 1)
 
 select: SELECT * FROM {0} WHERE guild_id = ?
