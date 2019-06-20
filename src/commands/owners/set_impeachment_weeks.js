@@ -42,7 +42,7 @@ module.exports = new class SetImpeachmentWeeks extends Command {
 
     db.update('guilds', {
       guild_id: msg.channel.guild.id,
-      impeachment_time: to_week * args.weeks
+      impeachment_time: args.weeks * to_week
     });
     await discord.create_msg(
       msg.channel,

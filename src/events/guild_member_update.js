@@ -45,8 +45,8 @@ client.on('guildMemberUpdate', async (guild, new_member, old_member) => {
     if (time_left > 0) {
       const { days, hours } = number.msToTime(time_left);
       const hours_left = (days * to_hours) + hours;
-      const reason = `This user cannot be nominated because they were impeached. \
-${discord.tag(new_member.user)} can be nominated again \
+      const reason = `This user cannot be an official because they were impeached. \
+${discord.tag(new_member.user)} can be an official again \
 ${hours_left ? `in ${hours_left} hours` : 'soon'}.`;
 
       if (n_roles.includes(officer)) {

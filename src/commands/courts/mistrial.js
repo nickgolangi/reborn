@@ -34,7 +34,7 @@ module.exports = new class Guilty extends Command {
 
   async run(msg) {
     const {
-      channel_id, id: case_id, plaintiff_id
+      channel_id, id: case_id, plaintiff_id, defendant_id
     } = db.get_channel_case(msg.channel.id);
     const cop = msg.channel.guild.members.get(plaintiff_id);
 
@@ -64,19 +64,20 @@ result in an impeachment. Type \`I'm sure\` if this is your final verdict.`
     }
 
     const {
-      officer_role, impeachment_time
+      officer_role, impeachment_time, imprisoned_role
     } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
     const weeks = impeachment_time / to_week;
 
-    await removeRole(msg.channel.guild.id, cop.id, officer_role);
+    await removeRole(msg.channel.guild.id, plaintiff_id, officer_role);
+    await removeRole(msg.channel.guild.id, defendant_id, imprisoned_role);
     db.insert('impeachments', {
-      member_id: cop.id,
+      member_id: plaintiff_id,
       guild_id: msg.channel.guild.id
     });
     await discord.create_msg(
       msg.channel,
       `${prefix}This court case has been declared as a mistrial.\n${cop.mention} has been \
-impeached and will not be able to recieve <@&${officer_role}> for ${weeks} weeks.`
+impeached and will not be able to recieve any government official role for ${weeks} weeks.`
     );
   }
 }();
