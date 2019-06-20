@@ -32,7 +32,7 @@ module.exports = new class SetWarrantChannel extends Command {
       ],
       description: 'Sets the Warrants channel.',
       groupName: 'owners',
-      names: ['set_warrant_channel']
+      names: ['set_warrant_channel', 'set_warrant']
     });
   }
 

@@ -32,7 +32,7 @@ module.exports = new class SetImprisonedRole extends Command {
       ],
       description: 'Sets the imprisoned role.',
       groupName: 'owners',
-      names: ['set_imprisoned_role']
+      names: ['set_imprisoned_role', 'set_imprisoned']
     });
   }
 

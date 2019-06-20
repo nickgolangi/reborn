@@ -32,7 +32,7 @@ module.exports = new class SetJailedRole extends Command {
       ],
       description: 'Sets the Jailed role.',
       groupName: 'owners',
-      names: ['set_jailed_role']
+      names: ['set_jailed_role', 'set_jailed']
     });
   }
 

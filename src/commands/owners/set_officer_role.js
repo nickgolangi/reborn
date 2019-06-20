@@ -32,7 +32,7 @@ module.exports = new class SetOfficerRole extends Command {
       ],
       description: 'Sets the Officer role.',
       groupName: 'owners',
-      names: ['set_officer_role', 'set_cop_role']
+      names: ['set_officer_role', 'set_cop_role', 'set_officer', 'set_cop']
     });
   }
 

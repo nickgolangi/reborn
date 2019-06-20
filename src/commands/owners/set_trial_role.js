@@ -32,7 +32,7 @@ module.exports = new class SetTrialRole extends Command {
       ],
       description: 'Sets the Trial role.',
       groupName: 'owners',
-      names: ['set_trial_role']
+      names: ['set_trial_role', 'set_trial']
     });
   }
 

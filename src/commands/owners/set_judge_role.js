@@ -32,7 +32,7 @@ module.exports = new class SetJudgeRole extends Command {
       ],
       description: 'Sets the Judge role.',
       groupName: 'owners',
-      names: ['set_judge_role']
+      names: ['set_judge_role', 'set_judge']
     });
   }
 

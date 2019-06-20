@@ -32,7 +32,7 @@ module.exports = new class SetCourtCategory extends Command {
       ],
       description: 'Sets the Court category.',
       groupName: 'owners',
-      names: ['set_court_category']
+      names: ['set_court_category', 'set_court']
     });
   }
 
