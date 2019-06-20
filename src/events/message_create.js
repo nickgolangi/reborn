@@ -98,7 +98,7 @@ ${result.context === Context.Guild ? 'DMs' : 'a server'}.`;
 client.on('messageCreate', catch_discord(async msg => {
   msg_collector.check(msg);
 
-  if (msg.embeds.length || !msg.author || msg.author.bot || !msg.content.startsWith(prefix)) {
+  if (!msg.author || msg.author.bot || !msg.content.startsWith(prefix)) {
     return;
   }
 

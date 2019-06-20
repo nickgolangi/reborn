@@ -80,11 +80,9 @@ module.exports = new class Arrest extends Command {
 
       const judge = this.getJudge(msg.channel.guild, args.warrant, judge_role);
       const officer = msg.author;
-      let defendant = msg.channel.guild.members.get(args.warrant.defendant_id);
+      let defendant = (msg.channel.guild.members.get(args.warrant.defendant_id) || {}).user;
 
-      if (defendant) {
-        defendant = defendant.user;
-      } else {
+      if (!defendant) {
         defendant = await msg._client.getRESTUser(args.warrant.defendant_id);
       }
 
@@ -144,7 +142,9 @@ ${discord.formatUsername(defendant.username)}`,
 
 ${judge.mention} will be presiding over this court proceeding.
 
-The defense is accused of violating the following law: ${law.name}.`
+The defense is accused of violating the following law: ${law.name}
+
+Evidence: ${warrant.evidence}.`
     );
     db.insert('cases', {
       guild_id: guild.id,

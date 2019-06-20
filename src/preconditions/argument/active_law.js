@@ -13,25 +13,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-const db = require('../services/database.js');
-const handle_matches = require('../utilities/handle_matches.js');
-const { TypeReader } = require('patron.js');
+const { ArgumentPrecondition, PreconditionResult } = require('patron.js');
 
-module.exports = new class Law extends TypeReader {
+module.exports = new class ActiveLaw extends ArgumentPrecondition {
   constructor() {
-    super({ type: 'law' });
+    super({ name: 'active_law' });
   }
 
-  async read(cmd, msg, arg, args, val) {
-    const name = val.toLowerCase();
-    const laws = db
-      .fetch_laws(msg.channel.guild.id)
-      .filter(x => x.active === 1);
+  async run(cmd, msg, arg, args, val) {
+    if (val.active === 0) {
+      return PreconditionResult.fromError(cmd, 'This law is no longer active.');
+    }
 
-    return handle_matches(
-      cmd,
-      laws.filter(law => law.name.toLowerCase().startsWith(name)),
-      'That law does not exist.'
-    );
+    return PreconditionResult.fromSuccess();
   }
 }();

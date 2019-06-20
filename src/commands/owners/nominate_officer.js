@@ -20,7 +20,7 @@ const discord = require('../../utilities/discord.js');
 module.exports = new class NominateOfficer extends Command {
   constructor() {
     super({
-      preconditions: ['usable_officer', 'usable_judge'],
+      preconditions: ['usable_officer'],
       args: [
         new Argument({
           example: 'Ashley',

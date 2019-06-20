@@ -62,17 +62,17 @@ module.exports = new class Warrants extends Command {
       warrants = [warrants];
     }
 
-    await this.sendWarrants(msg, activeWarrants);
+    await this.send_warrants(msg, activeWarrants);
   }
 
-  async sendWarrants(msg, warrants) {
+  async send_warrants(msg, warrants) {
     let content = '';
 
     for (let i = 0; i < warrants.length; i++) {
       const { id, defendant_id, judge_id, law_id, created_at } = warrants[i];
       const law = db.get_law(law_id);
-      let defendant = msg.channel.guild.members.get(defendant_id);
-      let judge = msg.channel.guild.members.get(judge_id);
+      let defendant = (msg.channel.guild.members.get(defendant_id) || {}).user;
+      let judge = (msg.channel.guild.members.get(judge_id) || {}).user;
 
       if (!defendant) {
         defendant = await msg._client.getRESTUser(defendant_id);
@@ -83,7 +83,7 @@ module.exports = new class Warrants extends Command {
       }
 
       const expires = created_at + config.auto_close_warrant - Date.now();
-      const message = `**${id}**. Issued against **${discord.tag(defendant.user)}** \
+      const message = `**${id}**. Issued against **${discord.tag(defendant)}** \
 by **${discord.tag(judge)}** for violating the law: ${law.name} \
 (${this.format_time(expires)}).\n`;
 

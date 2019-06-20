@@ -33,24 +33,27 @@ module.exports = new class GrantWarrantForArrest extends Command {
           key: 'law',
           name: 'law',
           type: 'law',
+          preconditions: ['active_law']
+        }),
+        new Argument({
+          example: 'https://i.imgur.com/gkxUedu.png',
+          key: 'evidence',
+          name: 'evidence',
+          type: 'string',
           remainder: true
         })
       ],
       description: 'Grants a warrant to arrest a citizen.',
       groupName: 'courts',
-      names: ['grant_warrant_for_arrest', 'warrant']
+      names: ['grant_warrant_for_arrest', 'request_warrant', 'warrant']
     });
   }
 
   async run(msg, args) {
-    if (args.law.active === 0) {
-      return CommandResult.fromError('This law is no longer active.');
-    }
-
     const { warrant_channel } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
 
     if (!warrant_channel) {
-      return;
+      return CommandResult.fromError('The warrant channel needs to be set up.');
     }
 
     const verified = await discord.verify_msg(
@@ -66,7 +69,8 @@ in impeachment. Type \`I'm sure\` if you are sure you want to grant this warrant
       guild_id: msg.channel.guild.id,
       law_id: args.law.id,
       defendant_id: args.member.id,
-      judge_id: msg.author.id
+      judge_id: msg.author.id,
+      evidence: args.evidence
     });
     await discord.create_msg(
       msg.channel,
