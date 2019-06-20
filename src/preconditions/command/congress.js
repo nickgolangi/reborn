@@ -36,8 +36,12 @@ module.exports = new class Congress extends Precondition {
       return PreconditionResult.fromError(
         cmd, 'the Congress role needs to be lower than me in hierarchy.'
       );
-    } else if (msg.member.roles.includes(congress_role)) {
-      return PreconditionResult.fromSuccess();
+    } else if (!msg.member.roles.includes(congress_role)) {
+      return PreconditionResult.fromError(
+        cmd, 'Only members of Congress may use this command'
+      );
     }
+
+    return PreconditionResult.fromSuccess();
   }
 }();
