@@ -72,6 +72,7 @@ guilds_table: |-
     judge_role TEXT,
     jailed_role TEXT,
     trial_role TEXT,
+    congress_role TEXT,
     imprisoned_role TEXT,
     court_category TEXT,
     warrant_channel TEXT
