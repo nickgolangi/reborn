@@ -42,11 +42,11 @@ module.exports = new class Commands extends Command {
 
         embed.fields[embed.fields.length - 1].value += command.names[0];
 
-        if (j + 1 !== groups[i].commands.length - 1) {
+        if (j !== groups[i].commands.length - 1) {
           embed.fields[embed.fields.length - 1].value += ', ';
         }
 
-        if (j === groups[i].commands.length - 1) {
+        if (j + 1 === groups[i].commands.length - 1) {
           embed.fields[embed.fields.length - 1].value += 'and ';
         }
       }
