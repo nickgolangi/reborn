@@ -47,8 +47,10 @@ module.exports = new class Commands extends Command {
           embed.fields[embed.fields.length - 1].value += ',';
         }
 
+        embed.fields[embed.fields.length - 1].value += ' ';
+
         if (j + 1 === groups[i].commands.length - 1) {
-          embed.fields[embed.fields.length - 1].value += ' and ';
+          embed.fields[embed.fields.length - 1].value += 'and ';
         }
       }
     }
