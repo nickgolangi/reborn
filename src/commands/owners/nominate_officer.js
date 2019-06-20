@@ -16,6 +16,8 @@
 const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
+const number = require('../../utilities/number.js');
+const to_hours = 24;
 
 module.exports = new class NominateOfficer extends Command {
   constructor() {
@@ -37,8 +39,11 @@ module.exports = new class NominateOfficer extends Command {
   }
 
   async run(msg, args) {
-    const { judge_role, officer_role } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
+    const {
+      judge_role, officer_role, impeachment_time
+    } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
     const { roles } = args.member;
+    const was_impeached = db.get_impeachment(msg.channel.guild.id, args.member.id);
 
     if (roles.includes(officer_role)) {
       return CommandResult.fromError('This user already has the Officer role.');
@@ -46,6 +51,16 @@ module.exports = new class NominateOfficer extends Command {
       return CommandResult.fromError(
         'This user cannot receive the Officer role since they have the Judge role.'
       );
+    } else if (was_impeached) {
+      const time_left = was_impeached.created_at + impeachment_time - Date.now();
+
+      if (time_left > 0) {
+        const { days, hours } = number.msToTime(time_left);
+        const hours_left = (days * to_hours) + hours;
+
+        return CommandResult.fromError(`This user cannot be nominated because they were impeached. \
+${args.member.mention} can be nominated again ${hours_left ? `in ${hours_left} hours` : 'soon'}.`);
+      }
     }
 
     await args.member.addRole(officer_role);

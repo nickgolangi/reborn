@@ -13,43 +13,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-const { Argument, Command, CommandResult } = require('patron.js');
+const { Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 
-module.exports = new class RemoveCommand extends Command {
+module.exports = new class RemoveAllCommands extends Command {
   constructor() {
     super({
-      preconditions: ['guild_db_exists'],
-      args: [
-        new Argument({
-          example: 'johns genitals',
-          key: 'name',
-          name: 'name',
-          type: 'string',
-          remainder: true,
-          preconditions: ['custom_command', 'command_owner']
-        })
-      ],
-      description: 'Removes a custom command.',
-      groupName: 'general',
-      names: ['remove_command', 'delete_command', 'remove_cmd']
+      description: 'Removes all of your custom commands.',
+      groupName: 'congress',
+      names: ['remove_all_commands', 'remove_all_cmds', 'remove_all']
     });
   }
 
-  async run(msg, args) {
-    const cmd = db
+  async run(msg) {
+    const cmds = db
       .fetch_commands(msg.channel.guild.id)
-      .find(x => x.name.toLowerCase() === args.name.toLowerCase() && x.active === 1);
+      .filter(x => x.creator_id === msg.author.id && x.active === 1);
 
-    if (cmd.active === 0) {
-      return CommandResult.fromError('This command was already removed.');
+    if (!cmds.length) {
+      return CommandResult.fromError('You have no active custom commands to remove.');
     }
 
-    db.close_command(cmd.id);
+    for (let i = 0; i < cmds.length; i++) {
+      db.close_command(cmds[i].id);
+    }
+
     await discord.create_msg(
       msg.channel,
-      `**${discord.tag(msg.author)}**, I've removed the custom command with the name ${args.name}.`
+      `**${discord.tag(msg.author)}**, I've removed all of your custom commands`
     );
   }
 }();

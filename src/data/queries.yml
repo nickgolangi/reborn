@@ -75,7 +75,8 @@ guilds_table: |-
     congress_role TEXT,
     imprisoned_role TEXT,
     court_category TEXT,
-    warrant_channel TEXT
+    warrant_channel TEXT,
+    impeachment_time INTEGER DEFAULT 1
   )
 
 commands_table: |-
@@ -161,3 +162,5 @@ select_verdicts: SELECT * FROM verdicts WHERE guild_id = ? AND defendant_id = ?
 select_verdict: SELECT * FROM verdicts WHERE case_id = ?
 
 select_commands: SELECT * FROM commands WHERE guild_id = ?
+
+select_impeachment: SELECT * FROM impeachments WHERE guild_id = ? AND member_id = ?

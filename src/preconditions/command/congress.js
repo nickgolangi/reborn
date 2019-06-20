@@ -13,33 +13,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-const { Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
+const { Precondition, PreconditionResult } = require('patron.js');
 
-module.exports = new class CustomCommands extends Command {
+module.exports = new class Congress extends Precondition {
   constructor() {
-    super({
-      description: 'View your custom commands.',
-      groupName: 'general',
-      names: ['custom_commands', 'custom_cmds']
-    });
+    super({ name: 'congress' });
   }
 
-  async run(msg) {
-    const cmds = db
-      .fetch_commands(msg.channel.guild.id)
-      .filter(x => x.creator_id === msg.author.id && x.active === 1);
+  async run(cmd, msg) {
+    const { congress_role } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
+    const role = msg.channel.guild.roles.get(congress_role);
 
-    if (!cmds.length) {
-      return CommandResult.fromError('You have no active custom commands.');
+    if (!congress_role) {
+      return PreconditionResult.fromError(cmd, 'the Congress role needs to be set.');
+    } else if (!role) {
+      return PreconditionResult.fromError(
+        cmd, 'the Congress role was deleted and needs to be set.'
+      );
+    } else if (!discord.usable_role(msg.channel.guild, role)) {
+      return PreconditionResult.fromError(
+        cmd, 'the Congress role needs to be lower than me in hierarchy.'
+      );
+    } else if (msg.member.roles.includes(congress_role)) {
+      return PreconditionResult.fromSuccess();
     }
-
-    const names = cmds.map(x => x.name).join(', ');
-
-    await discord.create_msg(msg.channel, {
-      title: `${discord.tag(msg.author)}'s Custom Commands`,
-      description: names
-    });
   }
 }();

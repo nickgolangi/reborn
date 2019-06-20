@@ -165,6 +165,10 @@ module.exports = {
     return queries.select_warrant.get(id);
   },
 
+  get_impeachment(guild_id, member_id) {
+    return queries.select_impeachment.get(guild_id, member_id);
+  },
+
   fetch_cases(id) {
     return queries.select_cases.all(id);
   },

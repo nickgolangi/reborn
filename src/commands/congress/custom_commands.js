@@ -17,12 +17,12 @@ const { Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 
-module.exports = new class RemoveAllCommands extends Command {
+module.exports = new class CustomCommands extends Command {
   constructor() {
     super({
-      description: 'Removes all of your custom commands.',
-      groupName: 'general',
-      names: ['remove_all_commands', 'remove_all_cmds', 'remove_all']
+      description: 'View your custom commands.',
+      groupName: 'congress',
+      names: ['custom_commands', 'custom_cmds']
     });
   }
 
@@ -32,16 +32,14 @@ module.exports = new class RemoveAllCommands extends Command {
       .filter(x => x.creator_id === msg.author.id && x.active === 1);
 
     if (!cmds.length) {
-      return CommandResult.fromError('You have no active custom commands to remove.');
+      return CommandResult.fromError('You have no active custom commands.');
     }
 
-    for (let i = 0; i < cmds.length; i++) {
-      db.close_command(cmds[i].id);
-    }
+    const names = cmds.map(x => x.name).join(', ');
 
-    await discord.create_msg(
-      msg.channel,
-      `**${discord.tag(msg.author)}**, I've removed all of your custom commands`
-    );
+    await discord.create_msg(msg.channel, {
+      title: `${discord.tag(msg.author)}'s Custom Commands`,
+      description: names
+    });
   }
 }();
