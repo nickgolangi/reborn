@@ -165,6 +165,12 @@ Evidence: ${warrant.evidence}.`
     if (judge.length > 1) {
       judge.splice(judge.findIndex(mbr => mbr.id === warrant.judge_id), 1);
 
+      const defendant = judge.findIndex(x => x.id === warrant.defendant_id);
+
+      if (defendant !== -1) {
+        judge.splice(defendant, 1);
+      }
+
       const active = judge.filter(x => x.status !== 'offline');
 
       if (active.length > 1) {
