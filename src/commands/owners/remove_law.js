@@ -42,7 +42,7 @@ module.exports = new class RemoveLaw extends Command {
 
     db.close_law(args.law.id);
     await discord.create_msg(
-      msg.channel, `**${discord.tag(msg.author)}**, I have removed law ${args.law.name}.`
+      msg.channel, `**${discord.tag(msg.author)}**, I have removed the law ${args.law.name}.`
     );
   }
 }();
