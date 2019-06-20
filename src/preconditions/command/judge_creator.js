@@ -22,7 +22,13 @@ module.exports = new class JudgeCreator extends Precondition {
   }
 
   async run(cmd, msg) {
-    const { judge_id } = db.get_channel_case(msg.channel.id);
+    const c_case = db.get_channel_case(msg.channel.id);
+
+    if (!c_case) {
+      return PreconditionResult.fromError(cmd, 'This channel case doesn\'t exist.');
+    }
+
+    const { judge_id } = c_case;
     const judge = msg.channel.guild.members.get(judge_id);
 
     if (msg.author.id !== judge_id && judge) {
