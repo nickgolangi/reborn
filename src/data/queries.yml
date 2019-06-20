@@ -19,8 +19,11 @@ warrants_table: |-
     created_at INTEGER NOT NULL,
     last_modified_at INTEGER NOT NULL,
     defendant_id TEXT NOT NULL,
-    judge_id TEXT NOT NULL,
-    evidence TEXT NOT NULL,
+    judge_id TEXT,
+    officer_id TEXT,
+    evidence TEXT,
+    request TINYINT NOT NULL DEFAULT 0,
+    approved TINYINT NOT NULL DEFAULT 0,
     executed TINYINT NOT NULL DEFAULT 0
   )
 
@@ -138,6 +141,8 @@ select_pending_verdicts: |-
 close_case: UPDATE verdicts SET verdict = 0 WHERE id = ?
 
 close_warrant: UPDATE warrants SET executed = 1 WHERE id = ?
+
+approve_warrant: UPDATE warrants SET approved = 1, judge_id = ? WHERE id = ?
 
 close_law: UPDATE laws SET active = 0 WHERE id = ?
 

@@ -17,29 +17,21 @@ const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 
-module.exports = new class GrantWarrantForArrest extends Command {
+module.exports = new class GrantArrestWarrant extends Command {
   constructor() {
     super({
       preconditions: ['judges'],
       args: [
         new Argument({
-          example: 'John',
-          key: 'member',
-          name: 'member',
-          type: 'member'
-        }),
-        new Argument({
-          example: 'Murder',
-          key: 'law',
-          name: 'law',
-          type: 'law',
-          preconditions: ['active_law'],
-          remainder: true
+          example: '2',
+          key: 'warrant',
+          name: 'id',
+          type: 'warrant'
         })
       ],
-      description: 'Grants a warrant to arrest a citizen.',
+      description: 'Approves a warrant request.',
       groupName: 'courts',
-      names: ['grant_warrant_for_arrest']
+      names: ['grant_arrest_warrant']
     });
   }
 
@@ -51,23 +43,18 @@ module.exports = new class GrantWarrantForArrest extends Command {
     }
 
     const verified = await discord.verify_msg(
-      msg, `**${discord.tag(msg.author)}**, **Warning:** Handing out false warrants will result \
-in impeachment. Type \`I'm sure\` if you are sure you want to grant this warrant.`
+      msg, `**${discord.tag(msg.author)}**, **Warning:** Granting false request warrants will \
+result in impeachment. Type \`I'm sure\` if you are sure you want to grant this warrant.`
     );
 
     if (!verified) {
       return CommandResult.fromError('The command has been cancelled.');
     }
 
-    db.insert('warrants', {
-      guild_id: msg.channel.guild.id,
-      law_id: args.law.id,
-      defendant_id: args.member.id,
-      judge_id: msg.author.id
-    });
+    db.approve_warrant(args.warrant.id, msg.author.id);
     await discord.create_msg(
       msg.channel,
-      `**${discord.tag(msg.author)}**, A warrant has been issued against ${args.member.mention}.`
+      `**${discord.tag(msg.author)}**, You've granted warrant ${args.warrant.id}.`
     );
   }
 }();

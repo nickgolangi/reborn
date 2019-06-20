@@ -23,6 +23,7 @@ module.exports = {
   load() {
     this.db = new Database(path.join(__dirname, '../', config.database));
     this.db.pragma('journal_mode = WAL');
+    // this.db.prepare('DELETE FROM warrants').run();
 
     const list = Object.keys(queries);
 
@@ -143,6 +144,10 @@ module.exports = {
 
   close_command(id) {
     return queries.close_cmd.run(id);
+  },
+
+  approve_warrant(id, judge_id) {
+    return queries.approve_warrant.run(judge_id, id);
   },
 
   get_channel_case(channel_id) {

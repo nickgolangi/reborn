@@ -59,6 +59,11 @@ module.exports = new class Arrest extends Command {
     return this.mutex.sync(`${msg.channel.guild.id}-${args.warrant.id}`, async () => {
       if (args.warrant.executed === 1) {
         return CommandResult.fromError('This warrant was already served.');
+      } else if (args.warrant.request === 1 && args.warrant.approved === 0) {
+        return CommandResult.fromError('This request warrant has not been approved by a judge.');
+      } else if (args.warrant.request === 1 && args.warrant.officer_id === msg.author.id) {
+        return CommandResult.fromError('You may not use your own request warrant to \
+arrest a citizen.');
       }
 
       const res = await this.prerequisites(msg, args.warrant);
@@ -135,17 +140,17 @@ ${discord.formatUsername(defendant.username)}`,
     await channel.edit({ nsfw: true });
 
     const law = db.get_law(warrant.law_id);
-
-    await discord.create_msg(
-      channel,
-      `${officer.mention} VS ${defendant.mention}
+    const embed = { description: `${officer.mention} VS ${defendant.mention}
 
 ${judge.mention} will be presiding over this court proceeding.
 
 The defense is accused of violating the following law: ${law.name}
 
-Evidence: ${warrant.evidence}.`
-    );
+${warrant.evidence ? `Evidence: ${warrant.evidence}.` : ''}` };
+
+    await channel.createMessage({
+      content: judge.mention, embed: discord.embed(embed).embed
+    });
     db.insert('cases', {
       guild_id: guild.id,
       channel_id: channel.id,
@@ -171,7 +176,7 @@ Evidence: ${warrant.evidence}.`
         judge.splice(defendant, 1);
       }
 
-      const active = judge.filter(x => x.status !== 'offline');
+      const active = judge.filter(x => x.status === 'online' || x.status === 'dnd');
 
       if (active.length > 1) {
         judge = active;
