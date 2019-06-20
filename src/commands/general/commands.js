@@ -15,6 +15,7 @@
 'use strict';
 const { Command } = require('patron.js');
 const registry = require('../../services/registry.js');
+const discord = require('../../utilities/discord.js');
 
 module.exports = new class Commands extends Command {
   constructor() {
@@ -52,6 +53,6 @@ module.exports = new class Commands extends Command {
       }
     }
 
-    await msg.channel.createMessage({ embed });
+    await msg.channel.createMessage(discord.embed(embed));
   }
 }();
