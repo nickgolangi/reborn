@@ -70,7 +70,14 @@ module.exports = new class AddCommand extends Command {
         );
       }
 
-      update.response = args.response.replace(/@(everyone|here|(!|&)?\d{17,19})/g, '@\u200b$1');
+      const response = msg.mentions
+        .map(x => x.id)
+        .concat(msg.roleMentions)
+        .reduce(
+          (a, b) => a.replace(b, `\u200b${b}`),
+          args.response.replace(/@(everyone|here)/g, '@\u200b$1')
+        );
+      update.response = response;
     }
 
     if (attachments.length) {
