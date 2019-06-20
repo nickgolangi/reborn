@@ -45,7 +45,7 @@ module.exports = new class GrantWarrantForArrest extends Command {
       ],
       description: 'Grants a warrant to arrest a citizen.',
       groupName: 'courts',
-      names: ['grant_warrant_for_arrest', 'request_warrant', 'warrant']
+      names: ['grant_warrant_for_arrest']
     });
   }
 
