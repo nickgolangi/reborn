@@ -19,7 +19,7 @@ const discord = require('../../utilities/discord.js');
 const empty_argument = Symbol('Empty Argument');
 const max_len = 500;
 
-module.exports = new class AddCommand extends Command {
+module.exports = new class AddHot extends Command {
   constructor() {
     super({
       preconditions: ['guild_db_exists', 'max_custom_cmds'],
@@ -42,7 +42,7 @@ module.exports = new class AddCommand extends Command {
       ],
       description: 'Adds a custom command.',
       groupName: 'congress',
-      names: ['add_command', 'create_command', 'add_cmd']
+      names: ['add_hot', 'create_command', 'add_cmd']
     });
   }
 
