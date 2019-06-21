@@ -77,6 +77,7 @@ module.exports = new class AddCommand extends Command {
           (a, b) => a.replace(b, `\u200b${b}`),
           args.response.replace(/@(everyone|here)/g, '@\u200b$1')
         );
+
       update.response = response;
     }
 
