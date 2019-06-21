@@ -24,30 +24,34 @@ const expiration = 864e5;
 const tickTime = 10;
 
 Timer(() => {
-  const verdicts = db.fetch_verdicts();
+  const guilds = [...client.guilds.keys()];
 
-  for (let i = 0; i < verdicts.length; i++) {
-    if (verdicts[i].verdict === verdict.pending) {
-      continue;
-    }
+  for (let k = 0; k < guilds.length; k++) {
+    const verdicts = db.fetch_verdicts(guilds[k]);
 
-    const time_left = verdicts[i].last_modified_at + expiration - Date.now();
+    for (let i = 0; i < verdicts.length; i++) {
+      if (verdicts[i].verdict === verdict.pending) {
+        continue;
+      }
 
-    if (time_left <= 0) {
-      continue;
-    }
+      const time_left = verdicts[i].last_modified_at + expiration - Date.now();
 
-    const guild = client.guilds.get(verdicts[i].guild_id);
+      if (time_left > 0) {
+        continue;
+      }
 
-    if (!guild) {
-      continue;
-    }
+      const guild = client.guilds.get(verdicts[i].guild_id);
 
-    const channel_case = db.get_case(verdicts[i].case_id);
-    const channel = guild.channels.get(channel_case.channel_id);
+      if (!guild) {
+        continue;
+      }
 
-    if (channel) {
-      delete_channel(channel, '24 hours since the verdict was delivered');
+      const channel_case = db.get_case(verdicts[i].case_id);
+      const channel = guild.channels.get(channel_case.channel_id);
+
+      if (channel) {
+        delete_channel(channel.id, '24 hours since the verdict was delivered');
+      }
     }
   }
 }, config.max_case_time / tickTime);
