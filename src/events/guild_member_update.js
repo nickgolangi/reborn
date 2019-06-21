@@ -60,9 +60,9 @@ async function remove_extra_roles(guild, member, jobs) {
       }
     }
 
-    await edit_member(guild.id, member.id, {
-      roles: set_roles, reason: 'Holding several job positions at once'
-    });
+    await edit_member(
+      guild.id, member.id, { roles: set_roles }, 'Holding several job positions at once'
+    );
   }
 }
 
