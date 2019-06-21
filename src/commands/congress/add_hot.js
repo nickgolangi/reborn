@@ -55,6 +55,8 @@ module.exports = new class AddHot extends Command {
       return CommandResult.fromError('A custom command by this name already exists.');
     } else if (!attachments.length && args.response === empty_argument) {
       return CommandResult.fromError('A custom command must at least have a response or image.');
+    } else if (!args.name.trim()) {
+      return CommandResult.fromError('The name cannot be empty.');
     }
 
     const update = {
