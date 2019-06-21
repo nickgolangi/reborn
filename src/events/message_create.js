@@ -98,7 +98,7 @@ ${result.context === Context.Guild ? 'DMs' : 'a server'}.`;
 client.on('messageCreate', catch_discord(async msg => {
   msg_collector.check(msg);
 
-  if (!msg.author || msg.author.bot || !msg.content.startsWith(prefix)) {
+  if (!msg.author || msg.author.bot) {
     return;
   }
 
@@ -107,7 +107,7 @@ client.on('messageCreate', catch_discord(async msg => {
   if (!isCommand.success && msg.channel.guild) {
     const custom_cmds = db.fetch_commands(msg.channel.guild.id);
     const names = msg.content
-      .slice(prefix.length)
+      .slice(msg.content.startsWith(prefix) ? prefix.length : 0)
       .toLowerCase()
       .split(' ')
       .filter(x => x);
@@ -128,6 +128,10 @@ client.on('messageCreate', catch_discord(async msg => {
 
       return msg.channel.createMessage(options.content, options.file);
     }
+  }
+
+  if (!msg.content.startsWith(prefix)) {
+    return;
   }
 
   const result = await handler.run(msg, prefix.length);
