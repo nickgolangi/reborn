@@ -111,7 +111,7 @@ client.on('messageCreate', catch_discord(async msg => {
       .toLowerCase()
       .split(' ')
       .filter(x => x);
-    const custom = custom_cmds.find(x => x.acitve === 1 && names.includes(x.name.toLowerCase()));
+    const custom = custom_cmds.find(x => x.active === 1 && names.includes(x.name.toLowerCase()));
 
     if (custom) {
       const options = {};
