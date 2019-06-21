@@ -27,18 +27,6 @@ warrants_table: |-
     executed TINYINT NOT NULL DEFAULT 0
   )
 
-detainments_table: |-
-  CREATE TABLE IF NOT EXISTS detainments (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    guild_id TEXT NOT NULL REFERENCES guilds(guild_id),
-    created_at INTEGER NOT NULL,
-    last_modified_at INTEGER NOT NULL,
-    defendant_id TEXT NOT NULL,
-    officer_id TEXT NOT NULL,
-    served TINYINT NOT NULL DEFAULT 0,
-    fled TINYINT NOT NULL DEFAULT 0
-  )
-
 cases_table: |-
   CREATE TABLE IF NOT EXISTS cases (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -121,23 +109,6 @@ insert: INSERT INTO {0}({1}) VALUES({2}) ON CONFLICT DO NOTHING
 
 upsert: INSERT INTO {0}({1}) VALUES({2}) ON CONFLICT(guild_id) DO UPDATE SET {3}
 
-select_pending_detainments: |-
-  SELECT *
-    FROM detainments
-  WHERE served = 0
-    AND ((fled = 0 AND created_at < date('now', '-{0} minutes'))
-      OR (fled = 1 AND last_modified_at < date('now', '-{1} minutes')))
-
-serve_detainment: UPDATE detainments SET served = 1 WHERE id = ?
-
-fled_detainment: UPDATE detainments SET fled = 1 WHERE id = ?
-
-select_pending_verdicts: |-
-  SELECT *
-    FROM verdicts
-  WHERE verdict = 0
-    AND created_at < date('now', '-{0} minutes')
-
 close_case: UPDATE verdicts SET verdict = 0 WHERE id = ?
 
 close_warrant: UPDATE warrants SET executed = 1 WHERE id = ?
@@ -162,7 +133,9 @@ select_warrants: SELECT * FROM warrants WHERE guild_id = ?
 
 select_warrant: SELECT * FROM warrants WHERE id = ?
 
-select_verdicts: SELECT * FROM verdicts WHERE guild_id = ? AND defendant_id = ?
+select_member_verdicts: SELECT * FROM verdicts WHERE guild_id = ? AND defendant_id = ?
+
+select_verdicts: SELECT * FROM verdicts WHERE guild_id = ?
 
 select_verdict: SELECT * FROM verdicts WHERE case_id = ?
 

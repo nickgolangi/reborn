@@ -74,15 +74,6 @@ arrest a citizen.');
 
       const { court_category, judge_role, trial_role } = res;
       const prefix = `**${discord.tag(msg.author)}**, `;
-      const detainment = db.fetch('detainments', {
-        guild_id: msg.channel.guild.id, officer_id: msg.author.id,
-        defendant_id: args.warrant.defendant_id, served: 0
-      });
-
-      if (detainment) {
-        db.serve_detainment(detainment.id);
-      }
-
       const judge = this.getJudge(msg.channel.guild, args.warrant, judge_role);
       const officer = msg.author;
       let defendant = (msg.channel.guild.members.get(args.warrant.defendant_id) || {}).user;

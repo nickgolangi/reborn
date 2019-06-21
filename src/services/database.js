@@ -17,13 +17,11 @@ const { config, queries } = require('./data.js');
 const Database = require('better-sqlite3');
 const path = require('path');
 const str = require('../utilities/string.js');
-const caseTime = 6e4;
 
 module.exports = {
   load() {
     this.db = new Database(path.join(__dirname, '../', config.database));
     this.db.pragma('journal_mode = WAL');
-    // this.db.prepare('DELETE FROM warrants').run();
 
     const list = Object.keys(queries);
 
@@ -107,29 +105,6 @@ module.exports = {
     )).get())[0] !== 0;
   },
 
-  fetch_pending_detainments() {
-    return this.db.prepare(str.format(
-      queries.select_pending_detainments,
-      Math.floor(config.detain_time / caseTime),
-      Math.floor(config.max_case_time / caseTime)
-    )).all();
-  },
-
-  serve_detainment(id) {
-    return queries.serve_detainment.run(id);
-  },
-
-  fled_detainment(id) {
-    return queries.fled_detainment.run(id);
-  },
-
-  fetch_pending_verdicts() {
-    return this.db.prepare(str.format(
-      queries.select_pending_verdicts,
-      Math.floor(config.max_case_time / caseTime)
-    )).all();
-  },
-
   close_case(id) {
     return queries.close_case.run(id);
   },
@@ -186,8 +161,12 @@ module.exports = {
     return queries.select_warrants.all(id);
   },
 
-  fetch_verdicts(guild_id, defendant_id) {
-    return queries.select_verdicts.all(guild_id, defendant_id);
+  fetch_member_verdicts(guild_id, defendant_id) {
+    return queries.select_member_verdicts.all(guild_id, defendant_id);
+  },
+
+  fetch_verdicts(guild_id) {
+    return queries.select_verdicts.all(guild_id);
   },
 
   fetch_commands(guild_id) {

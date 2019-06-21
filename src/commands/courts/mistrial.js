@@ -57,11 +57,11 @@ result in an impeachment. Type \`I'm sure\` if this is your final decision.`
     }
 
     db.insert('verdicts', {
-      guild_id: ids.guild,
+      guild_id: msg.channel.guild.id,
       case_id,
       defendant_id,
       verdict: verdict.mistrial
-    })
+    });
 
     const {
       officer_role, impeachment_time, imprisoned_role

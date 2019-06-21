@@ -17,45 +17,37 @@ const catch_discord = require('../utilities/catch_discord.js');
 const client = require('../services/client.js');
 const { config } = require('../services/data.js');
 const db = require('../services/database.js');
-const discord = require('../utilities/discord.js');
 const Timer = require('../utilities/timer.js');
+const verdict = require('../enums/verdict.js');
 const delete_channel = catch_discord(client.deleteChannel.bind(client));
-const remove_role = catch_discord(client.removeGuildMemberRole.bind(client));
+const expiration = 864e5;
 const tickTime = 10;
 
 Timer(() => {
-  const pending = db.fetch_pending_verdicts();
+  const verdicts = db.fetch_verdicts();
 
-  for (let i = 0; i < pending.length; i++) {
-    const { judge_role, jailed_role } = db.fetch('guilds', { guild_id: pending[i].guild_id });
-    const guild = client.guilds.get(pending[i].guild_id);
-    const o_role = guild.roles.get(judge_role);
-    const j_role = guild.roles.get(jailed_role);
-
-    if (!guild || !judge_role || !o_role || !discord.usable_role(guild, o_role)
-        || !jailed_role || !j_role || !discord.usable_role(guild, j_role)) {
-      return;
+  for (let i = 0; i < verdicts.length; i++) {
+    if (verdicts[i].verdict === verdict.pending) {
+      continue;
     }
 
-    const channel_case = db.get_case(pending[i].case_id);
-    const defendant = guild.members.get(channel_case.defendant_id);
-    const judge = guild.members.get(channel_case.judge_id);
+    const time_left = verdicts[i].last_modified_at + expiration - Date.now();
+
+    if (time_left <= 0) {
+      continue;
+    }
+
+    const guild = client.guilds.get(verdicts[i].guild_id);
+
+    if (!guild) {
+      continue;
+    }
+
+    const channel_case = db.get_case(verdicts[i].case_id);
     const channel = guild.channels.get(channel_case.channel_id);
 
     if (channel) {
-      delete_channel(channel);
+      delete_channel(channel, '24 hours since the verdict');
     }
-
-    if (defendant) {
-      if (defendant.roles.includes(jailed_role)) {
-        remove_role(guild.id, channel_case.defendant_id, jailed_role);
-      }
-
-      if (judge && judge.roles.includes(judge_role)) {
-        remove_role(guild.id, channel_case.judge_id, judge_role);
-      }
-    }
-
-    db.close_case(channel_case.id);
   }
 }, config.max_case_time / tickTime);
