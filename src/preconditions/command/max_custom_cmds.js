@@ -15,7 +15,7 @@
 'use strict';
 const { Precondition, PreconditionResult } = require('patron.js');
 const db = require('../../services/database.js');
-const max = 5;
+const max = 10;
 
 module.exports = new class MaxCustomCmds extends Precondition {
   constructor() {
