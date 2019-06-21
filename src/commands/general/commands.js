@@ -16,6 +16,7 @@
 const { Command } = require('patron.js');
 const registry = require('../../services/registry.js');
 const discord = require('../../utilities/discord.js');
+const { config: { prefix } } = require('../../services/data.js');
 
 module.exports = new class Commands extends Command {
   constructor() {
@@ -34,22 +35,25 @@ module.exports = new class Commands extends Command {
     };
 
     for (let i = 0; i < groups.length; i++) {
+      const group = groups[i];
+      const g_name = group.name[0].toUpperCase() + group.name.slice(1);
+
       embed.fields.push({
-        name: groups[i].name, value: '', inline: true
+        name: g_name, value: '', inline: true
       });
 
-      for (let j = 0; j < groups[i].commands.length; j++) {
-        const command = groups[i].commands[j];
+      for (let j = 0; j < group.commands.length; j++) {
+        const command = group.commands[j];
 
-        embed.fields[embed.fields.length - 1].value += command.names[0];
+        embed.fields[embed.fields.length - 1].value += `${prefix}${command.names[0]}`;
 
-        if (j !== groups[i].commands.length - 1 && groups[i].commands.length - 1 !== 1) {
+        if (j !== group.commands.length - 1 && group.commands.length - 1 !== 1) {
           embed.fields[embed.fields.length - 1].value += ',';
         }
 
         embed.fields[embed.fields.length - 1].value += ' ';
 
-        if (j + 1 === groups[i].commands.length - 1) {
+        if (j + 1 === group.commands.length - 1) {
           embed.fields[embed.fields.length - 1].value += 'and ';
         }
       }
