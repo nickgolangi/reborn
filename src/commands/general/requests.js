@@ -22,7 +22,7 @@ const empty_argument = Symbol('Empty Argument');
 const max_msg_len = 1900;
 const day_hours = 24;
 
-module.exports = new class ArrestWarrantRequests extends Command {
+module.exports = new class Requests extends Command {
   constructor() {
     super({
       args: [
@@ -36,7 +36,7 @@ module.exports = new class ArrestWarrantRequests extends Command {
       ],
       description: 'View the current request warrants.',
       groupName: 'general',
-      names: ['arrest_warrant_requests']
+      names: ['requests', 'arrest_warrant_requests']
     });
   }
 

@@ -17,21 +17,34 @@ const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 
-module.exports = new class GrantArrestWarrant extends Command {
+module.exports = new class Request extends Command {
   constructor() {
     super({
-      preconditions: ['judges'],
       args: [
         new Argument({
-          example: '2',
-          key: 'warrant',
-          name: 'id',
-          type: 'warrant'
+          example: 'Nͥatͣeͫ763#0554',
+          key: 'member',
+          name: 'member',
+          type: 'member'
+        }),
+        new Argument({
+          example: 'Murder',
+          key: 'law',
+          name: 'law',
+          type: 'law',
+          preconditions: ['active_law']
+        }),
+        new Argument({
+          example: 'https://i.imgur.com/gkxUedu.png',
+          key: 'evidence',
+          name: 'evidence',
+          type: 'string',
+          remainder: true
         })
       ],
-      description: 'Approves a warrant request.',
-      groupName: 'courts',
-      names: ['grant_arrest_warrant']
+      description: 'Request a warrant.',
+      groupName: 'enforcement',
+      names: ['request', 'request_warrant']
     });
   }
 
@@ -43,18 +56,25 @@ module.exports = new class GrantArrestWarrant extends Command {
     }
 
     const verified = await discord.verify_msg(
-      msg, `**${discord.tag(msg.author)}**, **Warning:** Granting false request warrants will \
-result in impeachment. Type \`I'm sure\` if you are sure you want to grant this warrant.`
+      msg, `**${discord.tag(msg.author)}**, **Warning:** Requesting false warrants will result \
+in impeachment. Type \`I'm sure\` if you are sure you want to grant this warrant.`
     );
 
     if (!verified) {
       return CommandResult.fromError('The command has been cancelled.');
     }
 
-    db.approve_warrant(args.warrant.id, msg.author.id);
+    db.insert('warrants', {
+      guild_id: msg.channel.guild.id,
+      law_id: args.law.id,
+      defendant_id: args.member.id,
+      officer_id: msg.author.id,
+      evidence: args.evidence,
+      request: 1
+    });
     await discord.create_msg(
       msg.channel,
-      `**${discord.tag(msg.author)}**, You've granted warrant ${args.warrant.id}.`
+      `**${discord.tag(msg.author)}**, A warrant has been requested against ${args.member.mention}.`
     );
   }
 }();
