@@ -68,6 +68,10 @@ module.exports = new class Guilty extends Command {
     const finished = currrent_verdict && currrent_verdict.verdict !== verdict.pending;
 
     if (finished) {
+      if (currrent_verdict.verdict === verdict.mistrial) {
+        return CommandResult.fromError('This case has already been declared as a mistrial.');
+      }
+
       return CommandResult.fromError('This case has already reached a verdict.');
     } else if (timeElapsed < half_hour) {
       return CommandResult.fromError('A verdict can only be delivered 30 minutes \

@@ -47,8 +47,9 @@ module.exports = new class Guilty extends Command {
     const prefix = `**${discord.tag(msg.author)}**, `;
     const verified = await discord.verify_msg(
       msg,
-      `${prefix}**Warning:** Are you sure you want to deliver this case as a mistrial?
-Doing so will impeach the prosecutor of this case, ${cop.mention}. Unjust mistrials will \
+      `${prefix}**Warning:** Are you sure you want to declare this case a mistrial?
+Doing so will impeach the prosecutor of this case, ${cop.mention}. No verdict will be delivered \
+and the defendant may be able to be prosecuted again. Unjust mistrials will \
 result in an impeachment. Type \`I'm sure\` if this is your final decision.`
     );
 
