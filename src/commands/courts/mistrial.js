@@ -72,9 +72,9 @@ result in an impeachment. Type \`I'm sure\` if this is your final decision.`
     await removeRole(msg.channel.guild.id, plaintiff_id, officer_role);
     await removeRole(msg.channel.guild.id, defendant_id, imprisoned_role);
     db.insert('impeachments', {
-      member_id: plaintiff_id,
-      guild_id: msg.channel.guild.id
+      member_id: plaintiff_id, guild_id: msg.channel.guild.id
     });
+    await msg.pin();
     await discord.create_msg(
       msg.channel,
       `${prefix}This court case has been declared as a mistrial.\n${cop.mention} has been \

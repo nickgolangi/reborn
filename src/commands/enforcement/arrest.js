@@ -138,10 +138,11 @@ ${judge.mention} will be presiding over this court proceeding.
 The defense is accused of violating the following law: ${law.name}
 
 ${warrant.evidence ? `Evidence: ${warrant.evidence}.` : ''}` };
-
-    await channel.createMessage({
+    const msg = await channel.createMessage({
       content: judge.mention, embed: discord.embed(embed).embed
     });
+
+    await msg.pin();
     db.insert('cases', {
       guild_id: guild.id,
       channel_id: channel.id,

@@ -108,6 +108,7 @@ result in an impeachment. Type \`I'm sure\` if this is your final verdict.`
 ${hours} hours in prison${repeated ? ` for repeatedly breaking the law \`${law.name}\`` : ''}` : '\
 charged with committing a misdemeanor'}.`;
 
+    await msg.pin();
     await discord.create_msg(
       msg.channel, `${prefix}${defendant.mention} has been found guilty and was ${ending}`
     );

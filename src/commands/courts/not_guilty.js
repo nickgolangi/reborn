@@ -74,6 +74,7 @@ module.exports = new class NotGuilty extends Command {
 
     const prefix = `**${discord.tag(msg.author)}**, `;
 
+    await msg.pin();
     await discord.create_msg(
       msg.channel, `${prefix} The court has found ${defendant.mention} not guilty.`
     );
