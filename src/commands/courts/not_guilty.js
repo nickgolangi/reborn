@@ -50,8 +50,7 @@ module.exports = new class NotGuilty extends Command {
     }
 
     const currrent_verdict = db.get_verdict(case_id);
-    const finished = currrent_verdict && (currrent_verdict.verdict === verdict.guilty
-      || currrent_verdict.verdict === verdict.innocent);
+    const finished = currrent_verdict && currrent_verdict.verdict !== verdict.pending;
 
     if (finished) {
       return CommandResult.fromError('This case has already reached a verdict.');

@@ -44,24 +44,24 @@ module.exports = new class Guilty extends Command {
       return CommandResult.fromError('The prosecutor is no longer in the server.');
     }
 
-    const currrent_verdict = db.get_verdict(case_id);
-    const ongoing = currrent_verdict && currrent_verdict.verdict === verdict.pending;
-
-    if (ongoing) {
-      return CommandResult.fromError('This case has not yet reached a verdict.');
-    }
-
     const prefix = `**${discord.tag(msg.author)}**, `;
     const verified = await discord.verify_msg(
       msg,
-      `${prefix}**Warning:** Are you sure you want to deliver this verdict as a mistrial?
+      `${prefix}**Warning:** Are you sure you want to deliver this case as a mistrial?
 Doing so will impeach the prosecutor of this case, ${cop.mention}. Unjust mistrials will \
-result in an impeachment. Type \`I'm sure\` if this is your final verdict.`
+result in an impeachment. Type \`I'm sure\` if this is your final decision.`
     );
 
     if (!verified) {
       return CommandResult.fromError('The command has been cancelled.');
     }
+
+    db.insert('verdicts', {
+      guild_id: ids.guild,
+      case_id,
+      defendant_id,
+      verdict: verdict.mistrial
+    })
 
     const {
       officer_role, impeachment_time, imprisoned_role

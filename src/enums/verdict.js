@@ -17,5 +17,6 @@
 module.exports = {
   pending: 0,
   guilty: 1,
-  innocent: 2
+  innocent: 2,
+  mistrial: 3
 };
