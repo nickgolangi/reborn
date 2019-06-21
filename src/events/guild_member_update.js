@@ -19,7 +19,52 @@ const discord = require('../utilities/discord.js');
 const number = require('../utilities/number.js');
 const db = require('../services/database.js');
 const remove_role = catch_discord(client.removeGuildMemberRole.bind(client));
+const edit_member = catch_discord(client.editGuildMember.bind(client));
 const to_hours = 24;
+
+async function impeached(guild, member, jobs, impeachment_time) {
+  const { roles: n_roles } = member;
+  const was_impeached = db.get_impeachment(guild.id, member.id);
+
+  if (was_impeached && (n_roles.includes(jobs.officer) || n_roles.includes(jobs.judge))) {
+    const time_left = was_impeached.created_at + impeachment_time - Date.now();
+
+    if (time_left > 0) {
+      const { days, hours } = number.msToTime(time_left);
+      const hours_left = (days * to_hours) + hours;
+      const reason = `This user cannot be an official because they were impeached. \
+${discord.tag(member.user)} can be an official again \
+${hours_left ? `in ${hours_left} hours` : 'soon'}.`;
+      const values = Object.values(jobs);
+      const has = n_roles.filter(x => values.includes(x));
+
+      for (let i = 0; i < has.length; i++) {
+        await remove_role(guild.id, member.id, has[i], reason);
+      }
+    }
+  }
+}
+
+async function remove_extra_roles(guild, member, jobs) {
+  const roles = Object.values(jobs).filter(x => member.roles.includes(x));
+  const set_roles = member.roles.slice();
+
+  if (roles.length > 1) {
+    roles.shift();
+
+    for (let i = 0; i < roles.length; i++) {
+      const index = set_roles.findIndex(x => x === roles[i]);
+
+      if (index !== -1) {
+        set_roles.splice(index, 1);
+      }
+    }
+
+    await edit_member(guild.id, member.id, {
+      roles: set_roles, reason: 'Holding several job positions at once'
+    });
+  }
+}
 
 client.on('guildMemberUpdate', async (guild, new_member, old_member) => {
   if (new_member.roles.length === old_member.roles.length) {
@@ -27,7 +72,7 @@ client.on('guildMemberUpdate', async (guild, new_member, old_member) => {
   }
 
   const {
-    officer_role: officer, judge_role: judge, impeachment_time
+    officer_role: officer, judge_role: judge, congress_role: congress, impeachment_time
   } = db.fetch('guilds', { guild_id: guild.id });
   const g_officer = guild.roles.get(officer);
   const g_judge = guild.roles.get(judge);
@@ -36,34 +81,10 @@ client.on('guildMemberUpdate', async (guild, new_member, old_member) => {
     return;
   }
 
-  const { roles: n_roles } = new_member;
-  const was_impeached = db.get_impeachment(guild.id, new_member.id);
+  const jobs = {
+    congress, officer, judge
+  };
 
-  if (was_impeached && (n_roles.includes(officer) || n_roles.includes(judge))) {
-    const time_left = was_impeached.created_at + impeachment_time - Date.now();
-
-    if (time_left > 0) {
-      const { days, hours } = number.msToTime(time_left);
-      const hours_left = (days * to_hours) + hours;
-      const reason = `This user cannot be an official because they were impeached. \
-${discord.tag(new_member.user)} can be an official again \
-${hours_left ? `in ${hours_left} hours` : 'soon'}.`;
-
-      if (n_roles.includes(officer)) {
-        await remove_role(guild.id, new_member.id, officer, reason);
-      }
-
-      if (n_roles.includes(judge)) {
-        await remove_role(guild.id, new_member.id, judge, reason);
-      }
-    }
-  }
-
-  const { roles: o_roles } = old_member;
-
-  if (o_roles.includes(officer) && n_roles.includes(officer) && n_roles.includes(judge)) {
-    await remove_role(guild.id, new_member.id, judge, 'Holding 2 job positions at once');
-  } else if (o_roles.includes(judge) && n_roles.includes(judge) && n_roles.includes(officer)) {
-    await remove_role(guild.id, new_member.id, officer, 'Holding 2 job positions at once');
-  }
+  await impeached(guild, new_member, jobs, impeachment_time);
+  await remove_extra_roles(guild, new_member, jobs);
 });

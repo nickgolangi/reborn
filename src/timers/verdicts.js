@@ -47,7 +47,7 @@ Timer(() => {
     const channel = guild.channels.get(channel_case.channel_id);
 
     if (channel) {
-      delete_channel(channel, '24 hours since the verdict');
+      delete_channel(channel, '24 hours since the verdict was delivered');
     }
   }
 }, config.max_case_time / tickTime);
