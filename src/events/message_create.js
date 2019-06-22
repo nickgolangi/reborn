@@ -103,7 +103,7 @@ function remove_punc(string) {
     return string;
   }
 
-  return remove_punc(string, -1);
+  return remove_punc(string.slice(0, -1));
 }
 
 client.on('messageCreate', catch_discord(async msg => {
