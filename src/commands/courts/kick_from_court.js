@@ -13,7 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-const { Argument, Command } = require('patron.js');
+const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 
@@ -40,7 +40,7 @@ module.exports = new class KickFromCourt extends Command {
     const court = db.get_channel_case(msg.channel.id);
 
     if (!court) {
-      return;
+      return CommandResult.fromError('This channel is not a court case.');
     }
 
     await msg.channel.deletePermission(args.member.id);
