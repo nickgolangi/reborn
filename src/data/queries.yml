@@ -67,7 +67,7 @@ guilds_table: |-
     imprisoned_role TEXT,
     court_category TEXT,
     law_channel TEXT,
-    impeachment_time INTEGER DEFAULT 604800000
+    impeachment_time INTEGER NOT NULL DEFAULT 604800000
   )
 
 commands_table: |-
