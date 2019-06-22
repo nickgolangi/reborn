@@ -49,12 +49,6 @@ module.exports = new class RequestWarrant extends Command {
   }
 
   async run(msg, args) {
-    const { warrant_channel } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
-
-    if (!warrant_channel) {
-      return CommandResult.fromError('The warrant channel needs to be set up.');
-    }
-
     const verified = await discord.verify_msg(
       msg, `**${discord.tag(msg.author)}**, **Warning:** Requesting false warrants will result \
 in impeachment. Type \`I'm sure\` if you are sure you want to grant this warrant.`
