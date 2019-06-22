@@ -17,10 +17,10 @@ const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 
-module.exports = new class RemoveCommand extends Command {
+module.exports = new class RemoveHot extends Command {
   constructor() {
     super({
-      preconditions: ['guild_db_exists'],
+      preconditions: ['guild_db_exists', 'congress'],
       args: [
         new Argument({
           example: 'johns genitals',
@@ -28,12 +28,12 @@ module.exports = new class RemoveCommand extends Command {
           name: 'name',
           type: 'string',
           remainder: true,
-          preconditions: ['custom_command', 'command_owner']
+          preconditions: ['custom_command']
         })
       ],
       description: 'Removes a custom command.',
       groupName: 'congress',
-      names: ['remove_command', 'delete_command', 'remove_cmd']
+      names: ['remove_hot', 'delete_hot']
     });
   }
 
