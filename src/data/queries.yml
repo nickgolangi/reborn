@@ -66,7 +66,6 @@ guilds_table: |-
     congress_role TEXT,
     imprisoned_role TEXT,
     court_category TEXT,
-    warrant_channel TEXT,
     impeachment_time INTEGER DEFAULT 604800000
   )
 
