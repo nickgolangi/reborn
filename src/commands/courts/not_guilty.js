@@ -45,8 +45,10 @@ module.exports = new class NotGuilty extends Command {
     } = db.get_channel_case(msg.channel.id);
     const defendant = msg.channel.guild.members.get(defendant_id);
 
-    if (!channel_id || !defendant) {
-      return;
+    if (!channel_id) {
+      return CommandResult.fromError('This channel is not a court case.');
+    } else if (!defendant) {
+      return CommandResult.fromError('The defendant has left the server.');
     }
 
     const currrent_verdict = db.get_verdict(case_id);
