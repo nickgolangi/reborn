@@ -17,12 +17,12 @@ const { Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 
-module.exports = new class CustomHots extends Command {
+module.exports = new class HotCommands extends Command {
   constructor() {
     super({
       description: 'View the server\'s custom commands.',
       groupName: 'congress',
-      names: ['custom_hots', 'custom_hot']
+      names: ['hot_commands', 'hot_cmds']
     });
   }
 
