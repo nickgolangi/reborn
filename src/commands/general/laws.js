@@ -57,10 +57,10 @@ module.exports = new class Laws extends Command {
       laws = [laws];
     }
 
-    await this.sendLaws(msg, laws.filter(x => x.active === 1));
+    await this.send_laws(msg, laws.filter(x => x.active === 1));
   }
 
-  async sendLaws(msg, laws) {
+  async send_laws(msg, laws) {
     let reply = '';
 
     for (let i = 0; i < laws.length; i++) {
