@@ -18,6 +18,7 @@ const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 const empty_argument = Symbol('Empty Argument');
 const max_len = 500;
+const min_len = 5;
 
 module.exports = new class AddHot extends Command {
   constructor() {
@@ -69,6 +70,10 @@ module.exports = new class AddHot extends Command {
       if (args.response.length > max_len) {
         return CommandResult.fromError(
           `The maximum length of the response can't be greater than ${max_len} characters.`
+        );
+      } else if (args.response.length < min_len) {
+        return CommandResult.fromError(
+          `The minimum length of the response is ${min_len}`
         );
       }
 
