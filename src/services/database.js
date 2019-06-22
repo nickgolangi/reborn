@@ -22,10 +22,6 @@ module.exports = {
   load() {
     this.db = new Database(path.join(__dirname, '../', config.database));
     this.db.pragma('journal_mode = WAL');
-    this.db.prepare('DELETE * FROM "verdicts"').run();
-    this.db.prepare('DELETE * FROM "cases"').run();
-    this.db.prepare('DELETE * FROM "warrants"').run();
-    this.db.prepare('DELETE * FROM "impeachments"').run();
 
     const list = Object.keys(queries);
 
