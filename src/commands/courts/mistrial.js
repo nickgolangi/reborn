@@ -37,8 +37,16 @@ module.exports = new class Guilty extends Command {
       channel_id, id: case_id, plaintiff_id, defendant_id
     } = db.get_channel_case(msg.channel.id);
     const cop = msg.channel.guild.members.get(plaintiff_id);
+    const currrent_verdict = db.get_verdict(case_id);
+    const finished = currrent_verdict && currrent_verdict.verdict !== verdict.pending;
 
-    if (!channel_id) {
+    if (finished) {
+      if (currrent_verdict.verdict === verdict.mistrial) {
+        return CommandResult.fromError('This case has already been declared as a mistrial.');
+      }
+
+      return CommandResult.fromError('This case has already reached a verdict.');
+    } else if (!channel_id) {
       return CommandResult.fromError('This channel has no ongoing court case.');
     } else if (!cop) {
       return CommandResult.fromError('The prosecutor is no longer in the server.');
