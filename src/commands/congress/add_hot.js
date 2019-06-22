@@ -30,7 +30,7 @@ module.exports = new class AddHot extends Command {
           key: 'name',
           name: 'name',
           type: 'string',
-          preconditions: ['conflicting_cmd']
+          preconditions: ['conflicting_cmd', 'alphanumeric']
         }),
         new Argument({
           example: 'are microscopic',
