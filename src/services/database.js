@@ -22,7 +22,6 @@ module.exports = {
   load() {
     this.db = new Database(path.join(__dirname, '../', config.database));
     this.db.pragma('journal_mode = WAL');
-    this.db.prepare('ALTER TABLE guilds ADD law_channel TEXT').run();
 
     const list = Object.keys(queries);
 
