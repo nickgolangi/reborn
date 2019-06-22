@@ -42,7 +42,7 @@ module.exports = new class SetLawChannel extends Command {
     });
     await discord.create_msg(
       msg.channel,
-      `**${discord.tag(msg.author)}**, I have set the law channelto ${args.channel.mention}.`
+      `**${discord.tag(msg.author)}**, I have set the law channel to ${args.channel.mention}.`
     );
   }
 }();
