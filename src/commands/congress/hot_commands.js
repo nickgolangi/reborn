@@ -22,7 +22,7 @@ module.exports = new class HotCommands extends Command {
     super({
       description: 'View the server\'s custom commands.',
       groupName: 'congress',
-      names: ['hot_commands', 'hot_cmds']
+      names: ['hot_commands', 'hot_cmds', 'hots']
     });
   }
 
