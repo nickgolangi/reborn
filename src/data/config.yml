@@ -7,6 +7,9 @@ prefix: "!"
 # Logs directory.
 logs_dir: "logs/"
 
+# Database backup directory.
+db_backup_dir: "backups"
+
 # Time detain lasts for in ms.
 detain_time: 3e5
 
