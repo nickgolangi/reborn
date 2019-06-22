@@ -29,16 +29,16 @@ module.exports = new class CustomHots extends Command {
   async run(msg) {
     const cmds = db
       .fetch_commands(msg.channel.guild.id)
-      .filter(x => x.creator_id === msg.author.id && x.active === 1);
+      .filter(x => x.active === 1);
 
     if (!cmds.length) {
-      return CommandResult.fromError('You have no active custom commands.');
+      return CommandResult.fromError('There are no custom commands.');
     }
 
     const names = cmds.map(x => x.name).join(', ');
 
     await discord.create_msg(msg.channel, {
-      title: `${discord.tag(msg.author)}'s Custom Commands`,
+      title: 'Custom Commands',
       description: names
     });
   }
