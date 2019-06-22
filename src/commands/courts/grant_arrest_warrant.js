@@ -17,7 +17,7 @@ const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 
-module.exports = new class Grant extends Command {
+module.exports = new class GrantArrestWarrant extends Command {
   constructor() {
     super({
       preconditions: ['judges'],
@@ -31,7 +31,7 @@ module.exports = new class Grant extends Command {
       ],
       description: 'Grants an arrest warrant request.',
       groupName: 'courts',
-      names: ['grant', 'grant_arrest_warrant']
+      names: ['grant_arrest_warrant', 'grant']
     });
   }
 
