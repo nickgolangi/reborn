@@ -22,7 +22,7 @@ module.exports = {
   load() {
     this.db = new Database(path.join(__dirname, '../', config.database));
     this.db.pragma('journal_mode = WAL');
-    this.db.prepare('DELETE FROM impeachments');
+
     const list = Object.keys(queries);
 
     for (let i = 0; i < list.length; i++) {
