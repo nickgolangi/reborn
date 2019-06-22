@@ -52,13 +52,13 @@ module.exports = new class Guilty extends Command {
     });
 
     const {
-      officer_role, impeachment_time, imprisoned_role
+      officer_role, impeachment_time, trial_role
     } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
     const weeks = impeachment_time / to_week;
     const prefix = `**${discord.tag(msg.author)}**, `;
 
     await removeRole(msg.channel.guild.id, plaintiff_id, officer_role);
-    await removeRole(msg.channel.guild.id, defendant_id, imprisoned_role);
+    await removeRole(msg.channel.guild.id, defendant_id, trial_role);
     db.insert('impeachments', {
       member_id: plaintiff_id, guild_id: msg.channel.guild.id
     });
