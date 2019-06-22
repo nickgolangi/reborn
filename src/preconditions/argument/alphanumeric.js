@@ -22,7 +22,7 @@ module.exports = new class Alphanumeric extends ArgumentPrecondition {
   }
 
   async run(cmd, msg, arg, args, val) {
-    if (!regex.test(val)) {
+    if (regex.test(val)) {
       return PreconditionResult.fromError(cmd, 'Only alphanumerical inputs are allowed.');
     }
 
