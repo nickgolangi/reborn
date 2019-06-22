@@ -17,7 +17,7 @@ const { Argument, Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 
-module.exports = new class Request extends Command {
+module.exports = new class RequestWarrant extends Command {
   constructor() {
     super({
       args: [
@@ -44,7 +44,7 @@ module.exports = new class Request extends Command {
       ],
       description: 'Request a warrant.',
       groupName: 'enforcement',
-      names: ['request', 'request_warrant']
+      names: ['request_warrant', 'request']
     });
   }
 
