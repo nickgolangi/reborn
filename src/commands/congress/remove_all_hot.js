@@ -17,12 +17,12 @@ const { Command, CommandResult } = require('patron.js');
 const db = require('../../services/database.js');
 const discord = require('../../utilities/discord.js');
 
-module.exports = new class RemoveAllCommands extends Command {
+module.exports = new class RemoveAllHot extends Command {
   constructor() {
     super({
       description: 'Removes all of your custom commands.',
       groupName: 'congress',
-      names: ['remove_all_commands', 'remove_all_cmds', 'remove_all']
+      names: ['remove_all_hot', 'remove_all']
     });
   }
 
