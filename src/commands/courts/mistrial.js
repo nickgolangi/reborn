@@ -44,19 +44,6 @@ module.exports = new class Guilty extends Command {
       return CommandResult.fromError('The prosecutor is no longer in the server.');
     }
 
-    const prefix = `**${discord.tag(msg.author)}**, `;
-    const verified = await discord.verify_msg(
-      msg,
-      `${prefix}**Warning:** Are you sure you want to declare this case a mistrial?
-Doing so will impeach the prosecutor of this case, ${cop.mention}. No verdict will be delivered \
-and the defendant may be able to be prosecuted again. Unjust mistrials will \
-result in an impeachment. Type \`I'm sure\` if this is your final decision.`
-    );
-
-    if (!verified) {
-      return CommandResult.fromError('The command has been cancelled.');
-    }
-
     db.insert('verdicts', {
       guild_id: msg.channel.guild.id,
       case_id,
@@ -68,6 +55,7 @@ result in an impeachment. Type \`I'm sure\` if this is your final decision.`
       officer_role, impeachment_time, imprisoned_role
     } = db.fetch('guilds', { guild_id: msg.channel.guild.id });
     const weeks = impeachment_time / to_week;
+    const prefix = `**${discord.tag(msg.author)}**, `;
 
     await removeRole(msg.channel.guild.id, plaintiff_id, officer_role);
     await removeRole(msg.channel.guild.id, defendant_id, imprisoned_role);
@@ -78,7 +66,9 @@ result in an impeachment. Type \`I'm sure\` if this is your final decision.`
     await discord.create_msg(
       msg.channel,
       `${prefix}This court case has been declared as a mistrial.\n${cop.mention} has been \
-impeached and will not be able to recieve any government official role for ${weeks} weeks.`
+impeached and will not be able to recieve any government official role for ${weeks} weeks.
+
+No verdict has been delivered and the accused may be prosecuted again.`
     );
   }
 }();
